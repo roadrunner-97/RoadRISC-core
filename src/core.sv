@@ -3,14 +3,24 @@ import definitions::*;
 module core
 (
     input logic reset,
-    input logic clock
+    input logic clock,
+    output logic[7:0] output_byte
 );
 
 //rom controls
-    rom_addr_t pc;
-    rom_addr_t pc_next;
+    addr_t pc;
+    addr_t pc_next;
     instruction_t current_instruction;
     decoded_instruction_t controls;
+
+// ram controls
+
+    addr_t ram_rd_addr;
+    word_t ram_rd_data;
+
+    addr_t ram_wr_addr;
+    word_t ram_wr_data;
+    logic ram_wr_enable;
 
 // register controls
     reg_addr_t reg_rd1_select;
@@ -23,15 +33,6 @@ module core
     word_t reg_wr_data;
     logic reg_wr_enable;
 
-// ram controls
-
-    ram_addr_t ram_rd_addr;
-    word_t ram_rd_data;
-
-    ram_addr_t ram_wr_addr;
-    word_t ram_wr_data;
-    logic ram_wr_enable;
-
 // alu wires
     word_t alu_input_a;
     word_t alu_input_b;
@@ -40,22 +41,19 @@ module core
     logic alu_less_than;
     opcode_t curr_opcode;
 
-//rom instantiation
-    rom #(
-        .FILE ("src/fibonacci.hex")
-        ) rom(
-        .clock(clock),
-        .address(pc),
-        .data(current_instruction)
-    );
-
-    ram ram(
+    mmap #(
+        .RAM_SIZE(1024),
+        .ROM_SIZE(1024),
+        .FILE("src/program.hex")
+    ) mmap(
         .clock(clock),
         .write_address(ram_wr_addr),
         .write_data(ram_wr_data),
         .write_enable(ram_wr_enable),
         .read_address(ram_rd_addr),
-        .read_data(ram_rd_data)
+        .read_data(ram_rd_data),
+        .instruction_pointer(pc),
+        .instruction_data(current_instruction)
     );
 
     instruction_decoder idc(
@@ -84,14 +82,14 @@ module core
     );
 
     assign curr_opcode = controls.opcode;
-
+    assign output_byte = pc[7:0];
     always_ff @(posedge clock) begin
-        if(reset) pc <= '0;
+        if(reset) pc <= 16'hFC00;
         else pc <= pc_next;
     end
 
     always_comb begin
-        pc_next = pc + 1;
+        pc_next = pc + 2;
 
         reg_wr_enable = '0;
         reg_wr_select = '0;
@@ -120,21 +118,21 @@ module core
         end
 
         if(controls.jump) begin
-            pc_next = controls.immediate[7:0];
+            pc_next = controls.immediate;
             if (controls.opcode == OP_JAL) begin
-                reg_wr_data = word_t'(pc) + 1;
+                reg_wr_data = pc + 1;
             end
         end
 
         if(controls.branch) begin
             if((controls.opcode == OP_BEQ && alu_equal) || 
                (controls.opcode == OP_BLT && alu_less_than)) begin
-                    pc_next = pc + $signed(controls.immediate[7:0]);
+                    pc_next = pc + $signed(controls.immediate);
             end
         end
 
         if(controls.mem_read) begin
-            ram_rd_addr = ram_addr_t'(reg_rd1_data + controls.immediate);
+            ram_rd_addr = addr_t'(reg_rd1_data + controls.immediate);
             reg_wr_data = ram_rd_data;
         end
 

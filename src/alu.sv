@@ -19,31 +19,27 @@ module alu
                 result = input_a + input_b;
             end
 
-            OP_LUI: begin
-                result = input_b << 20;
-            end
-
-            OP_SUB: begin
+            OP_SUB, OP_SUBI: begin
                 result = input_a - input_b;
             end
 
-            OP_AND: begin
+            OP_AND, OP_ANDI: begin
                 result = input_a & input_b;
             end
 
-            OP_OR: begin
+            OP_OR, OP_ORI: begin
                 result = input_a | input_b;
             end
 
-            OP_XOR: begin
+            OP_XOR, OP_XORI: begin
                 result = input_a ^ input_b;
             end
 
-            OP_SHL: begin
+            OP_SHL, OP_SHLI: begin
                 result = input_a << input_b;
             end
 
-            OP_SHR: begin
+            OP_SHR, OP_SHRI: begin
                 result = input_a >> input_b;
             end
 

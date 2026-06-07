@@ -14,12 +14,9 @@ module registers(
     input logic write_enable
 );
 
-    //minus 1 because the 0th register doesn't need backing
     word_t registers[REG_COUNT];
 
     //debug ports to view in gtkwave
-    //NB: must be `assign`, not initializers — `word_t rN = registers[N];` is a
-    //one-time variable init (runs once at t=0), so the nets would never update.
     word_t r0, r1, r2, r3, r4, r5, r6, r7;
     word_t r8, r9, r10, r11, r12, r13, r14, r15;
     assign r0  = registers[0];
@@ -39,12 +36,18 @@ module registers(
     assign r14 = registers[14];
     assign r15 = registers[15];
 
+    integer i;
+    initial begin
+        for (i = 0; i < REG_COUNT; i++)
+            registers[i] = '0;
+    end
 
-    assign read_1_data = (read_1_select == 0) ? '0 : registers[read_1_select];
-    assign read_2_data = (read_2_select == 0) ? '0 : registers[read_2_select];
+
+    assign read_1_data = registers[read_1_select];
+    assign read_2_data = registers[read_2_select];
 
     always_ff @(posedge clock) begin
-        if(write_enable && (write_select != 0)) begin
+        if(write_enable) begin
             registers[write_select] <= write_data;
         end
     end

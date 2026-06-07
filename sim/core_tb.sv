@@ -5,10 +5,12 @@ module core_tb;
 
     logic clock;
     logic reset;
+    logic [7:0] output_data;
 
     core dut (
         .clock (clock),
-        .reset (reset)
+        .reset (reset),
+        .output_byte(output_data)
     );
 
     initial clock = 0;
@@ -18,6 +20,7 @@ module core_tb;
         $dumpfile("build/core.vcd");
         $dumpvars(0, core_tb);
 
+        $display("ROM_START = %0d", definitions::ROM_START);
         // hold reset for a few cycles
         reset = 1;
         repeat(4) @(posedge clock);

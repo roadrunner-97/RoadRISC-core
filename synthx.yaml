@@ -22,13 +22,12 @@ packages:
 modules:
   alu:                  { deps: [definitions] }
   registers:            { deps: [definitions] }
-  ram:                  { deps: [definitions] }
-  rom:                  { deps: [definitions], data: [sim/rom.hex] }   # $readmemh fixture
+  mmap:                 { deps: [definitions], data: [src/program.hex]}
   instruction_decoder:  { deps: [definitions]}
   clock_divider:        {}
   pulse_generator:      {}
   edge_detector:        {}
   clock_synchroniser:   {}
   hex_display:          { deps: [clock_divider] } # instantiates clock_divider
-  top:                  { src: src/main.v }       # non-default extension; no testbench
-  core:                 { deps: [definitions, alu, registers, ram, rom, instruction_decoder] , data: [src/fibonacci.hex]}
+  # top:                  { src: src/main.v }       # non-default extension; no testbench
+  core:                 { deps: [definitions, alu, registers, mmap, instruction_decoder],  data: [src/program.hex]}
