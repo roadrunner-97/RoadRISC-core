@@ -1,0 +1,34 @@
+# synthx build manifest — "CMakeLists for Verilog".
+#
+# Paths default by convention (filename == module name):
+#   src -> {src_dir}/{name}.sv     tb -> {sim_dir}/{name}_tb.sv (used if present)
+# so a module usually only needs to declare its `deps`.
+#
+# Per-module keys (all optional):
+#   src    source file              (default {src_dir}/{name}.sv)
+#   tb     testbench file           (default {sim_dir}/{name}_tb.sv, used if it exists)
+#   deps   package/module names     (resolved transitively, packages compiled first)
+#   data   extra runtime files      (e.g. $readmemh inputs; tracked for staleness)
+
+defaults:
+  std: 2012          # -> iverilog -g2012
+  src_dir: src
+  sim_dir: sim
+  build_dir: build
+
+packages:
+  definitions: packages/definitions.sv
+
+modules:
+  alu:                  { deps: [definitions] }
+  registers:            { deps: [definitions] }
+  ram:                  { deps: [definitions] }
+  rom:                  { deps: [definitions], data: [sim/rom.hex] }   # $readmemh fixture
+  instruction_decoder:  { deps: [definitions]}
+  clock_divider:        {}
+  pulse_generator:      {}
+  edge_detector:        {}
+  clock_synchroniser:   {}
+  hex_display:          { deps: [clock_divider] } # instantiates clock_divider
+  top:                  { src: src/main.v }       # non-default extension; no testbench
+  core:                 { deps: [definitions, alu, registers, ram, rom, instruction_decoder] , data: [src/fibonacci.hex]}

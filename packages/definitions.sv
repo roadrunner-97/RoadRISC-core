@@ -20,23 +20,43 @@ package definitions;
         OP_HALT = 8'hFF
     } opcode_t;
 
+    localparam int RAM_SIZE = 256;
+    localparam int ROM_SIZE = 256;
+
+    typedef logic [$clog2(RAM_SIZE)-1:0] ram_addr_t;
+    typedef logic [$clog2(ROM_SIZE)-1:0] rom_addr_t;
+
     // word and register types
     typedef logic [63:0] word_t;
     typedef logic [3:0]  reg_addr_t;
     typedef logic [7:0]  opcode_raw_t;
-    typedef logic [43:0] imm_t;
+    typedef logic [43:0] immediate_t;
 
     // instruction fields (unpacked from a 64-bit instruction word)
     typedef struct packed {
-        opcode_raw_t opcode;
-        reg_addr_t   rd;
-        reg_addr_t   ra;
-        reg_addr_t   rb;
-        imm_t        imm;
-    } instr_t;
+        opcode_t     opcode;
+        reg_addr_t   reg_destination;
+        reg_addr_t   reg_a;
+        reg_addr_t   reg_b;
+        immediate_t  immediate;
+    } instruction_t;
+
+    typedef struct packed {
+        opcode_t   opcode;
+        reg_addr_t reg_destination;
+        reg_addr_t reg_a;
+        reg_addr_t reg_b;
+        word_t     immediate;
+        logic      use_immediate;
+        logic      mem_read;
+        logic      mem_write;
+        logic      reg_writeback;
+        logic      branch;
+        logic      jump;
+        logic      halt;
+    } decoded_instruction_t;
 
     // CPU parameters
     localparam int REG_COUNT = 16;
-    localparam int REG_SIZE  = 64;
 
 endpackage

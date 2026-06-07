@@ -11,10 +11,7 @@ module registers_tb;
     logic [63:0] write_data;
     logic        write_enable;
 
-    registers #(
-        .REG_COUNT(16),
-        .REG_SIZE(64)
-    ) dut (
+    registers dut (
         .clock         (clock),
         .read_1_select (read_1_select),
         .read_1_data   (read_1_data),

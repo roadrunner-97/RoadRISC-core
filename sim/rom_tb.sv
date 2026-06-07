@@ -7,7 +7,6 @@ module rom_tb;
     logic [63:0] data;
 
     rom #(
-        .BIT_WIDTH  (64),
         .WORD_COUNT (256),
         .FILE       ("sim/rom.hex")
     ) dut (

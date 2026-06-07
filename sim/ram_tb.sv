@@ -10,7 +10,6 @@ module ram_tb;
     logic [63:0] read_data;
 
     ram #(
-        .BIT_WIDTH(64),
         .WORD_COUNT(256)
     ) dut (
         .clock         (clock),

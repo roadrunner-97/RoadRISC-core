@@ -1,2 +1,5 @@
 build
 impl
+*.egg-info/
+__pycache__/
+.venv/
