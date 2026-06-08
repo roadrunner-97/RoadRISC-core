@@ -24,6 +24,7 @@
 0x0B  XORI  Rd, Ra, #imm     Rd = Ra ^ imm
 0x0D  SHLI  Rd, Ra, #imm     Rd = Ra << imm
 0x0F  SHRI  Rd, Ra, #imm     Rd = Ra >> imm  logical
+0x17  LDI   Rd, #imm         Rd = imm
 
 # memory
 0x10  LD    Rd, Ra, #imm     Rd = mem[Ra + imm]

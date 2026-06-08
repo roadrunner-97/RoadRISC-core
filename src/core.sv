@@ -154,6 +154,10 @@ module core
             ram_wr_enable = '1;
             ram_wr_data = reg_rd1_data;
         end
+
+        if(controls.opcode == OP_LDI) begin
+            reg_wr_data = controls.immediate;
+        end
     end
 
 

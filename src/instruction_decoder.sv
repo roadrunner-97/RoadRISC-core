@@ -27,7 +27,7 @@ module instruction_decoder
 
         case(in.opcode)
             OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SHLI,
-            OP_SHRI, OP_LD, OP_ST, OP_JMP, OP_JAL, OP_JREL: begin
+            OP_SHRI, OP_LD, OP_ST, OP_JMP, OP_JAL, OP_JREL, OP_LDI: begin
                 out.immediate = in.operand.imm;
                 out.use_immediate = '1;
                 out.reg_b = '0;
