@@ -30,7 +30,7 @@
 0x11  ST    Ra, Rb, #imm     mem[Ra + imm] = Rb
 
 # control flow
-0x12  BEQ   Ra, Rb, #imm     if Ra == Rb: PC += imm  signed, PC-relative
-0x13  BLT   Ra, Rb, #imm     if Ra < Rb:  PC += imm  unsigned comparison
+0x12  BEQ   Ra, Rd, #imm     if Ra == Rd: PC += imm  signed, PC-relative
+0x13  BLT   Ra, Rd, #imm     if Ra < Rd:  PC += imm  unsigned comparison
 0x14  JMP   #imm             PC = imm  absolute
 0x15  JAL   Rd, #imm         Rd = PC+1; PC = imm  Rd holds return address
