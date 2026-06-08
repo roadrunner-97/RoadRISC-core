@@ -32,5 +32,6 @@
 # control flow
 0x12  BEQ   Ra, Rd, #imm     if Ra == Rd: PC += imm  signed, PC-relative
 0x13  BLT   Ra, Rd, #imm     if Ra < Rd:  PC += imm  unsigned comparison
-0x14  JMP   #imm             PC = imm  absolute
+0x14  JMP   #imm             PC = imm, absolute jump
 0x15  JAL   Rd, #imm         Rd = PC+1; PC = imm  Rd holds return address
+0x16  JREL  #imm             PC += (signed) imm, relative jump

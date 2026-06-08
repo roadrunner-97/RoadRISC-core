@@ -23,6 +23,7 @@ package definitions;
         OP_BLT  = 8'h13,
         OP_JMP  = 8'h14,
         OP_JAL  = 8'h15,
+        OP_JREL = 8'h16,
         OP_HALT  = 8'hFF
     } opcode_t;
 

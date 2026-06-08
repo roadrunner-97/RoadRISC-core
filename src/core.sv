@@ -119,9 +119,22 @@ module core
 
         if(controls.jump) begin
             pc_next = controls.immediate;
-            if (controls.opcode == OP_JAL) begin
-                reg_wr_data = pc + 1;
-            end
+            case(controls.opcode)
+                OP_JMP: begin
+                    pc_next = controls.immediate;
+                end
+                OP_JAL: begin
+                    pc_next = controls.immediate;
+                    reg_wr_data = pc + 1;
+                end
+                OP_JREL: begin
+                    pc_next += $signed(controls.immediate);
+                end
+            endcase
+        end
+
+        if (controls.opcode == OP_JAL) begin
+            end else if (controls.opcode == OP_JREL) begin
         end
 
         if(controls.branch) begin
