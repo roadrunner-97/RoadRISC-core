@@ -131,7 +131,7 @@ module core
 
         alu_input_a = reg_rd1_data;
 
-        if(controls.reg_writeback) begin
+        if(controls.reg_writeback && core_state == EXECUTE) begin
             reg_wr_data = alu_result;
             reg_wr_select = controls.reg_destination;
             reg_wr_enable = '1;
@@ -170,7 +170,7 @@ module core
             reg_wr_data = ram_rd_data;
         end
 
-        if(controls.mem_write) begin
+        if(controls.mem_write && core_state == TRANSFER) begin
             ram_wr_addr = reg_rd2_data + controls.immediate;
             ram_wr_enable = '1;
             ram_wr_data = reg_rd1_data;
