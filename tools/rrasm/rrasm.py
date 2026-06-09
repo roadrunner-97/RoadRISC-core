@@ -223,7 +223,7 @@ registers = {
 def splitn(obj, n):
 	return [obj[i:i + n] for i in range(0, len(obj), n)];
 
-# padd null
+# pad binary with nulls to `padlen`
 def null_pad(bin, padlen):
 	return bin + (b"\x00" * (padlen - len(bin)));
 
@@ -238,13 +238,17 @@ def fpgasynth_format_transformer(bin):
 		output += bytes(high + low + "\n", "utf-8");
 	return output
 
+# transform bin to .mi format
 def mi_format_transformer(bin):
-	header = b"#File_format=Hex\n";
-	header += b"#Address_depth=" + bytes(str(len(bin)), "utf-8") + b"\n";
-	header += b"#Data_width=32\n";
-
-	output = header;
+	output = b"";
 	dwords = splitn(bin, 4);
+
+	# calc header
+	header = b"#File_format=Hex\n";
+	header += b"#Address_depth=" + bytes(str(len(dwords) * 4), "utf-8") + b"\n";
+	header += b"#Data_width=32\n";
+	output = header;
+
 	for dword in dwords:
 		dword = null_pad(dword, 4);
 		high = hex(dword[0])[2:].zfill(2).upper();
@@ -252,6 +256,7 @@ def mi_format_transformer(bin):
 		midl = hex(dword[2])[2:].zfill(2).upper();
 		low = hex(dword[3])[2:].zfill(2).upper();
 		output += bytes(high + midh + midl + low + "\n", "utf-8");
+
 	return output;
 
 # format table
