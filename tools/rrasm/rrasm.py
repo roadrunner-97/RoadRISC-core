@@ -58,7 +58,7 @@ def mov_virtual_instruction(a, b):
 	if (a["type"] == "reg" and b["type"] == "mem"):
 		return {"type": "instruction", "name": "ld"};
 
-	if (a["type"] == "reg" and b["type"] == "int"):
+	if (a["type"] == "reg" and (b["type"] == "int" or b["type"] == "sym")):
 		return {"type": "instruction", "name": "ldi"};
 
 	return {"type": "error", "value": ERR_UNSUPPORTED_ARGS};
@@ -68,6 +68,10 @@ def jmp_virtual_instruction(a):
 	if (pie):
 		return {"type": "instruction", "name": "jrel"};
 
+	return {"type": "instruction", "name": "jmp"};
+
+# `jmpabs` instruction virtual resolver, resolve to jmp always regardless of pie
+def jmpabs_virtual_instruction(a):
 	return {"type": "instruction", "name": "jmp"};
 
 # generic register, register || #imm virtual resolver, resolve to rr or imm depending on operand types
@@ -160,6 +164,7 @@ virtual = {
 	"org": {"args": [1], "resolve": org_virtual},
 	"extern": {"args": [1], "resolve": extern_virtual},
 	"jmp": {"args": [1], "resolve": jmp_virtual_instruction},
+	"jmpabs": {"args": [1], "resolve": jmpabs_virtual_instruction},
 	"db": {"args": False, "resolve": lambda *operands: dd_virtual(1, *operands)},
 	"dw": {"args": False, "resolve": lambda *operands: dd_virtual(2, *operands)},
 	"dd": {"args": False, "resolve": lambda *operands: dd_virtual(4, *operands)},
