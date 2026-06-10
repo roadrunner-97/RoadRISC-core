@@ -5,7 +5,7 @@ import argparse
 
 # python slop written as fast as possible
 
-WORD_SIZE = 4; # square number
+WORD_SIZE = 4; # power of two
 WORD_ADDRESSED = True; # for example: (with 4 byte words) word 2 starts at `0x00001` rather than `0x00004`
 ADDRESS_SHIFT = len(bin(WORD_SIZE - 1)[2:]); # change WORD_SIZE
 
