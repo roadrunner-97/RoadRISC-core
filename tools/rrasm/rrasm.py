@@ -5,6 +5,12 @@ import argparse
 
 # python slop written as fast as possible
 
+WORD_SIZE = 4; # square number
+WORD_ADDRESSED = True; # for example: (with 4 byte words) word 2 starts at `0x00001` rather than `0x00004`
+ADDRESS_SHIFT = len(bin(WORD_SIZE - 1)[2:]); # change WORD_SIZE
+
+FPGASYNTH_WORD_SIZE = 4;
+
 # encoding table
 encodings = {
 	"nop": {"args": 0, "encoding": ""},
@@ -230,14 +236,15 @@ def null_pad(bin, padlen):
 # transform bin to fpgasynth format
 def fpgasynth_format_transformer(bin):
 	output = b"";
-	dwords = splitn(bin, 4);
-	for dword in dwords:
-		dword = null_pad(dword, 4);
-		high = hex(dword[0])[2:].zfill(2).upper();
-		midh = hex(dword[1])[2:].zfill(2).upper();
-		midl = hex(dword[2])[2:].zfill(2).upper();
-		low = hex(dword[3])[2:].zfill(2).upper();
-		output += bytes(high + midh + midl + low + "\n", "utf-8");
+	words = splitn(bin, FPGASYNTH_WORD_SIZE);
+	for word in words:
+		word = null_pad(word, FPGASYNTH_WORD_SIZE);
+		i = 0;
+		while (i < FPGASYNTH_WORD_SIZE): # fix endian
+			byte = hex(word[i])[2:].zfill(2).upper();
+			output += bytes(byte, "utf-8");
+			i += 1;
+		output += b"\n";
 
 	return output
 
@@ -500,7 +507,11 @@ def serialise_instruction(instruction, offset):
 				operand = {"type": "int", "value": vmembase};
 				if (letter == 'r'):
 					relative_unresolved = True;
-					unresolved.append({"type": "rel16", "symname": symname, "address": offset + 2, "relbase": vmembase + (offset >> 2)});
+
+					if (WORD_ADDRESSED):
+						unresolved.append({"type": "rel16", "symname": symname, "address": offset + 2, "relbase": vmembase + (offset >> ADDRESS_SHIFT)});
+					else:
+						unresolved.append({"type": "rel16", "symname": symname, "address": offset + 2, "relbase": vmembase + offset});
 				else:
 					unresolved.append({"type": "abs16", "symname": symname, "address": offset + 2});
 
@@ -532,7 +543,11 @@ def serialise_instruction(instruction, offset):
 			serialised[2] = (value >> 8) & 0xff;
 
 		if (letter == 'r' and relative_unresolved == False):
-			value = operand["value"] - (vmembase + (offset >> 2));
+			if (WORD_ADDRESSED):
+				value = operand["value"] - (vmembase + (offset >> ADDRESS_SHIFT));
+			else:
+				value = operand["value"] - (vmembase + offset);
+
 			if ((value < -0x7fff) or (value > 0x7fff)):
 				print(value, operand, vmembase, offset);
 				return {"type": "error", "value": ERR_UNSUPPORTED_ARGS};
@@ -562,7 +577,10 @@ def assemble_instruction(instruction, offset):
 		return decoded["value"];
 
 	if (decoded["type"] == "relsym"):
-		symbols[decoded["value"]] = vmembase + (offset >> 2);
+		if (WORD_ADDRESSED):
+			symbols[decoded["value"]] = vmembase + (offset >> ADDRESS_SHIFT);
+		else:
+			symbols[decoded["value"]] = vmembase + offset;
 		return b"";
 
 	if (decoded["type"] == "null"):
