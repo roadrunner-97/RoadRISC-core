@@ -5,6 +5,54 @@ import argparse
 
 # python slop written as fast as possible
 
+# encoding table
+encodings = {
+	"nop": {"args": 0, "encoding": ""},
+	"add": {"args": 3, "encoding": "dab"},
+	"addi": {"args": 3, "encoding": "dai"},
+	"sub": {"args": 3, "encoding": "dab"},
+	"subi": {"args": 3, "encoding": "dai"},
+	"and": {"args": 3, "encoding": "dab"},
+	"andi": {"args": 3, "encoding": "dai"},
+	"or": {"args": 3, "encoding": "dab"},
+	"ori": {"args": 3, "encoding": "dai"},
+	"xor": {"args": 3, "encoding": "dab"},
+	"xori": {"args": 3, "encoding": "dai"},
+	"shl": {"args": 3, "encoding": "dab"},
+	"shli": {"args": 3, "encoding": "dai"},
+	"shr": {"args": 3, "encoding": "dab"},
+	"shri": {"args": 3, "encoding": "dai"},
+	"ld": {"args": 2, "encoding": "dm"},
+	"st": {"args": 2, "encoding": "Ma"},
+	"beq": {"args": 3, "encoding": "dar"},
+	"blt": {"args": 3, "encoding": "dar"},
+	"jmp": {"args": 1, "encoding": "i"},
+	"jal": {"args": 2, "encoding": "di"},
+	"jrel": {"args": 1, "encoding": "r"},
+	"ldi": {"args": 2, "encoding": "di"},
+	"halt": {"args": 0, "encoding": ""},
+};
+
+# register table
+registers = {
+	"r0": {"type": "reg", "value": 0},
+	"r1": {"type": "reg", "value": 1},
+	"r2": {"type": "reg", "value": 2},
+	"r3": {"type": "reg", "value": 3},
+	"r4": {"type": "reg", "value": 4},
+	"r5": {"type": "reg", "value": 5},
+	"r6": {"type": "reg", "value": 6},
+	"r7": {"type": "reg", "value": 7},
+	"r8": {"type": "reg", "value": 8},
+	"r9": {"type": "reg", "value": 9},
+	"r10": {"type": "reg", "value": 10},
+	"r11": {"type": "reg", "value": 11},
+	"r12": {"type": "reg", "value": 12},
+	"r13": {"type": "reg", "value": 13},
+	"r14": {"type": "reg", "value": 14},
+	"r15": {"type": "reg", "value": 15},
+};
+
 # opcode map
 opcodes = {
 	"nop": 0x00,
@@ -171,54 +219,6 @@ virtual = {
 	"dq": {"args": False, "resolve": lambda *operands: dd_virtual(8, *operands)},
 };
 
-# encoding table
-encodings = {
-	"nop": {"args": 0, "encoding": ""},
-	"add": {"args": 3, "encoding": "dab"},
-	"addi": {"args": 3, "encoding": "dai"},
-	"sub": {"args": 3, "encoding": "dab"},
-	"subi": {"args": 3, "encoding": "dai"},
-	"and": {"args": 3, "encoding": "dab"},
-	"andi": {"args": 3, "encoding": "dai"},
-	"or": {"args": 3, "encoding": "dab"},
-	"ori": {"args": 3, "encoding": "dai"},
-	"xor": {"args": 3, "encoding": "dab"},
-	"xori": {"args": 3, "encoding": "dai"},
-	"shl": {"args": 3, "encoding": "dab"},
-	"shli": {"args": 3, "encoding": "dai"},
-	"shr": {"args": 3, "encoding": "dab"},
-	"shri": {"args": 3, "encoding": "dai"},
-	"ld": {"args": 2, "encoding": "dm"},
-	"st": {"args": 2, "encoding": "Ma"},
-	"beq": {"args": 3, "encoding": "dar"},
-	"blt": {"args": 3, "encoding": "dar"},
-	"jmp": {"args": 1, "encoding": "i"},
-	"jal": {"args": 2, "encoding": "di"},
-	"jrel": {"args": 1, "encoding": "r"},
-	"ldi": {"args": 2, "encoding": "di"},
-	"halt": {"args": 0, "encoding": ""},
-};
-
-# register table
-registers = {
-	"r0": {"type": "reg", "value": 0},
-	"r1": {"type": "reg", "value": 1},
-	"r2": {"type": "reg", "value": 2},
-	"r3": {"type": "reg", "value": 3},
-	"r4": {"type": "reg", "value": 4},
-	"r5": {"type": "reg", "value": 5},
-	"r6": {"type": "reg", "value": 6},
-	"r7": {"type": "reg", "value": 7},
-	"r8": {"type": "reg", "value": 8},
-	"r9": {"type": "reg", "value": 9},
-	"r10": {"type": "reg", "value": 10},
-	"r11": {"type": "reg", "value": 11},
-	"r12": {"type": "reg", "value": 12},
-	"r13": {"type": "reg", "value": 13},
-	"r14": {"type": "reg", "value": 14},
-	"r15": {"type": "reg", "value": 15},
-};
-
 # split `obj` ever `n` whatevers
 def splitn(obj, n):
 	return [obj[i:i + n] for i in range(0, len(obj), n)];
@@ -230,11 +230,15 @@ def null_pad(bin, padlen):
 # transform bin to fpgasynth format
 def fpgasynth_format_transformer(bin):
 	output = b"";
-	words = splitn(bin, 4);
-	for word in words:
-		word = null_pad(word, 4);
-		hexstr = "".join(hex(b)[2:].zfill(2).upper() for b in word);
-		output += bytes(hexstr + "\n", "utf-8");
+	dwords = splitn(bin, 4);
+	for dword in dwords:
+		dword = null_pad(dword, 4);
+		high = hex(dword[0])[2:].zfill(2).upper();
+		midh = hex(dword[1])[2:].zfill(2).upper();
+		midl = hex(dword[2])[2:].zfill(2).upper();
+		low = hex(dword[3])[2:].zfill(2).upper();
+		output += bytes(high + midh + midl + low + "\n", "utf-8");
+
 	return output
 
 # transform bin to .mi format
@@ -496,9 +500,9 @@ def serialise_instruction(instruction, offset):
 				operand = {"type": "int", "value": vmembase};
 				if (letter == 'r'):
 					relative_unresolved = True;
-					unresolved.append({"type": "rel16", "symname": symname, "address": offset + 1, "relbase": vmembase + (offset)});
+					unresolved.append({"type": "rel16", "symname": symname, "address": offset + 2, "relbase": vmembase + (offset >> 2)});
 				else:
-					unresolved.append({"type": "abs16", "symname": symname, "address": offset + 1});
+					unresolved.append({"type": "abs16", "symname": symname, "address": offset + 2});
 
 		# this needs to be simplified, very messy due to frequent changes
 		if ((letter == 'd' or letter == 'a' or letter == 'b') and operand["type"] != "reg"):
@@ -528,7 +532,7 @@ def serialise_instruction(instruction, offset):
 			serialised[2] = (value >> 8) & 0xff;
 
 		if (letter == 'r' and relative_unresolved == False):
-			value = operand["value"] - (vmembase + offset);
+			value = operand["value"] - (vmembase + (offset >> 2));
 			if ((value < -0x7fff) or (value > 0x7fff)):
 				print(value, operand, vmembase, offset);
 				return {"type": "error", "value": ERR_UNSUPPORTED_ARGS};
@@ -558,7 +562,7 @@ def assemble_instruction(instruction, offset):
 		return decoded["value"];
 
 	if (decoded["type"] == "relsym"):
-		symbols[decoded["value"]] = vmembase + offset;
+		symbols[decoded["value"]] = vmembase + (offset >> 2);
 		return b"";
 
 	if (decoded["type"] == "null"):

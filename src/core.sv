@@ -164,7 +164,7 @@ module core
         if(controls.branch) begin
             if((controls.opcode == OP_BEQ && alu_equal) || 
                (controls.opcode == OP_BLT && alu_less_than)) begin
-                    pc_next = pc + $signed(controls.immediate);
+                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
             end
         end
 
