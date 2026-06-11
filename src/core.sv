@@ -4,7 +4,10 @@ module core
 (
     input logic reset,
     input logic clock,
-    output logic[7:0] output_byte
+
+    output logic[7:0] bus0_connector,
+    output logic[7:0] bus1_connector,
+    output logic[7:0] bus2_connector
 );
 
 //rom controls
@@ -61,12 +64,12 @@ module core
     logic reg_wr_enable_override = '0;
 
 // interrupt wires
-    logic interrupt_pin;
+    wire interrupt_pin;
     logic ignore_interrupt_pin;
 
 // io wires
     io_addr_t io_read_select;
-    word_t io_read_data;
+    wire[31:0] io_read_data;
 
     io_addr_t io_wr_select;
     word_t io_wr_data;
@@ -103,6 +106,20 @@ module core
         .write_enable(io_wr_enable)
     );
 
+    ioconnector ioconnector(
+        .clock(clock),
+	.reset(reset),
+	.read_select(io_read_select),
+	.read_data(io_read_data),
+        .write_select(io_wr_select),
+        .write_data(io_wr_data),
+        .write_enable(io_wr_enable),
+
+	.bus0_connector(bus0_connector),
+	.bus1_connector(bus1_connector),
+	.bus2_connector(bus2_connector)
+    );
+
     registers registers(
         .clock(clock),
         .read_1_select(reg_rd1_select),
@@ -124,7 +141,6 @@ module core
     );
 
     assign curr_opcode = controls.opcode;
-    assign output_byte = pc[7:0];
 
     assign exception = controls.exception;
     cpu_core_state_t core_state;

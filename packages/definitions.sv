@@ -130,5 +130,9 @@ package definitions;
         PIT_FLAG     = 8'h00,
         PIT_DEADLINE = 8'h01
     } pit_regs_t;
+    
+// I/O connector
+    localparam int IOCONNECTOR_BASE = 32'h0008;
+    localparam int IOCONNECTOR_BASE_END = 32'h000c;
 
 endpackage

@@ -33,15 +33,10 @@ or r14, PIT_NEVER_INTERRUPTED
 
 ; add new tests here hew new I/O devices
 
-done: ; signal end with 0xff00 in r0 and stall
-
-
-	; ON END:
+done:	; ON END:
 	; r0  = 0xff00 (Stall Signal)
-	; r1  = undefined
-	; r14 = undefined
-	; r15 = Error Bitmap
-	mov r0, 0xff00
+	; r14 = Error Bitmap
+	mov r0, 0xff00 ; signal end with 0xff00 in r0 and stall
 stall:
 	jmp stall
 
