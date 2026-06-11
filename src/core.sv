@@ -190,7 +190,7 @@ module core
     end
 
     always_comb begin
-	pc_next = pc + 2;
+	pc_next = pc + 1;
 	sp_next = sp;
 
 	reg_wr_enable = '0;
@@ -245,7 +245,7 @@ module core
                     reg_wr_data = pc_next;
                 end
                 OP_JREL: begin
-                    pc_next = pc + $signed(controls.immediate);
+                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
                 end
             endcase
         end
@@ -253,7 +253,7 @@ module core
         if(controls.branch) begin
             if((controls.opcode == OP_BEQ && alu_equal) || 
                (controls.opcode == OP_BLT && alu_less_than)) begin
-                    pc_next = pc + $signed(controls.immediate);
+                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
             end
         end
 

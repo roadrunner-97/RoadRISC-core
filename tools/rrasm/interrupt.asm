@@ -10,20 +10,20 @@ mov r15, 0x1234	; signal stall in gtkwave
 stall:
 jmp stall	; stall
 
-; todo: allow these symbol declarations to be inline with instructions like nasm?
 interrupt_handler:
 	push r0		; we will clobber r0
 	push r1		; and r1
+	push r2		; and now r2
 	mov r1, sp	; grab stack pointer into r1
-	mov r0,  [r1 + 0x0002]	; interrupt address
-	mov r14, [r1 + 0x0003]	; interrupt reason
-
-	add r0, 2	; skip faulting instruction
-	mov r1, retaddr	; put wound pc into retaddr
-	mov [r1], r0
-
+	mov r0,  [r1 + 0x0003]	; interrupt address
+	mov r14, [r1 + 0x0004]	; interrupt reason
+	add r0, 1	; skip faulting instruction
+	mov r2, exitjmp	; put wound pc into retaddr
+	mov r1, [r2]	; or address onto instruction instead of writing
+	or r1, r0
+	mov [r2], r1
+	pop r2
 	pop r1
 	pop r0
-	db 0x14, 0x00	; exit handler
-retaddr:
-	dw 0x0000
+exitjmp: ; can no longer address the operands individually
+	dd 0x14000000

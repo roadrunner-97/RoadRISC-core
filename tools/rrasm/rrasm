@@ -5,11 +5,11 @@ import argparse
 
 # python slop written as fast as possible
 
-WORD_SIZE = 2; # power of 2
+WORD_SIZE = 4; # power of 2
 WORD_ADDRESSED = True; # for example: (with 4 byte words) word 2 starts at `0x00001` rather than `0x00004`
 ADDRESS_SHIFT = len(bin(WORD_SIZE - 1)[2:]); # change WORD_SIZE
 
-FPGASYNTH_WORD_SIZE = 2;
+FPGASYNTH_WORD_SIZE = 4;
 
 # instruction encoding table
 encodings = {

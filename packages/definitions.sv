@@ -66,15 +66,15 @@ package definitions;
     localparam int RAM_SIZE = 32768; /* in units of kilowords */
     localparam int REG_COUNT = 24;
     localparam int GPR_COUNT = 16;
-    localparam int RAM_WIDTH = 16;
+    localparam int RAM_WIDTH = 32;
 
-    localparam int RESET_ADDRRESS = 16'h0000;
+    localparam int RESET_ADDRRESS = 32'h0000;
 
 
     typedef logic [RAM_WIDTH-1:0] addr_t;
 
     // word and register types
-    typedef logic [15:0] word_t;
+    typedef logic [31:0] word_t;
     typedef logic [$clog2(REG_COUNT)-1:0]  reg_addr_t;
     typedef logic [$clog2(GPR_COUNT)-1:0]  insr_reg_addr_t;
 
@@ -98,7 +98,7 @@ package definitions;
         reg_addr_t reg_a;
         reg_addr_t reg_b;
 
-        word_t     immediate;
+        logic[15:0] immediate;
 	int_code_t exception_reason;
         logic      use_immediate;
         logic      mem_read;
