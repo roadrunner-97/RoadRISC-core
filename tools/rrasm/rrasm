@@ -3,13 +3,26 @@
 import struct
 import argparse
 
-# python slop written as fast as possible
+### constants
 
 WORD_SIZE = 4; # power of 2
 WORD_ADDRESSED = True; # for example: (with 4 byte words) word 2 starts at `0x00001` rather than `0x00004`
 ADDRESS_SHIFT = len(bin(WORD_SIZE - 1)[2:]); # change WORD_SIZE
 
+## transformers
 FPGASYNTH_WORD_SIZE = 4;
+ELF_MACHINE_TYPE = 0x23; # our (unrecognised, non-standard) machine type
+ELF_OSABI_TYPE = 0x80; # out (unrecognised, non-standard) OS/ABI type
+ELF_OSABI_VERSION = 0x00; # this is osabi specific anyway
+
+### default variable values
+
+vmembase = 0x0000; # default executable base
+entrypoint_name = "_start";
+pie = True; # default pie setting - also set by --no-pie
+
+
+
 
 # instruction encoding table
 encodings = {
@@ -86,8 +99,6 @@ aliases = {
 	"hlt": "halt",
 };
 
-vmembase = 0x0000; # default executable base
-
 symbols = {}; # symbols - filled at runtime
 
 macros = {}; # macros - same thing
@@ -95,8 +106,6 @@ macros = {}; # macros - same thing
 unresolved = []; # unresolved symbols - same
 
 exports = []; # exports - same
-
-pie = True; # pie - set by --no-pie
 
 # `mov` instruction virtual overload resolver, resolve to st, ld, or ldi depending on operand types
 def mov_virtual_instruction(a, b):
@@ -190,7 +199,7 @@ def serialise(bytesize, operand):
 
 # `org` virtual instruction, set vmembase to int operand
 def org_virtual(origin):
-	global vmembase
+	global vmembase;
 	if (origin["type"] != "int"):
 		return {"type": "error", "value": ERR_UNSUPPORTED_ARGS};
 
@@ -286,12 +295,61 @@ def mi_format_transformer(bin):
 
 	return output;
 
+# transfrom bin to .vmd format
+def vmd_format_transformer(bin):
+	header = b"\xfeVmD";
+	header += struct.pack(">I", vmembase);
+
+	output = header + bin;
+	return output;
+
+# look for entry point symbols, no entry point is also perfectly valid
+def search_for_entrypoint():
+	if (entrypoint_name in symbols):
+		return symbols[entrypoint_name];
+
+	return 0x00000000;
+
+# transform bin to .elf format
+def elf_format_transformer(bin):
+	program_header = b"\x00\x00\x00\x01"; # type
+	program_header += b"\x00\x00\x00\x56"; # segment file offset
+	program_header += struct.pack(">I", vmembase); # virtual address
+	program_header += struct.pack(">I", vmembase); # physical address
+	program_header += struct.pack(">I", len(bin)); # segment file size
+	program_header += struct.pack(">I", len(bin)); # segment mem size
+	program_header += b"\x00\x00\x00\x07"; # protection flags
+	program_header += b"\x00\x00\x00\x00"; # alignment
+
+	header = b"\x7fELF";
+	header += bytes([0x01, 0x02, 0x01, ELF_OSABI_TYPE]); # class | data | version | ident
+	header += bytes([ELF_OSABI_VERSION, 0x00, 0x00, 0x00]); # abiver | pad
+	header += b"\x00\x00\x00\x00"; # pad
+	header += b"\x00\x01" + struct.pack(">H", ELF_MACHINE_TYPE); # type | machine
+	header += b"\x00\x00\x00\x01"; # version
+	header += struct.pack(">I", search_for_entrypoint()); # entry
+	header += b"\x00\x00\x00\x34"; # program header file offset
+	header += b"\x00\x00\x00\x00"; # section header file offset
+	header += b"\x00\x00\x00\x00"; # flags
+	header += b"\x00\x00\x00\x20"; # header size | program header entry size
+	header += b"\x00\x01\x00\x00"; # program header entries | section header entry size
+	header += b"\x00\x00\x00\x00"; # section header entries | section header string table index
+
+	output = header;
+	output += program_header;
+	output += bin;
+	return output;
+
 # format table
 formats = {
 	"bin": lambda bin: bin, # already binary, no transform
 	"fpgasynth": fpgasynth_format_transformer,
 	"mi": mi_format_transformer,
+	"vmd": vmd_format_transformer,
+	"elf": elf_format_transformer,
 };
+
+formats_help = "set output format [ %s ]" % (", ".join(formats.keys()));
 
 # error enum
 ERR_DECODE_FAILED = 0;
@@ -346,10 +404,12 @@ def decode_mem_operand(operand):
 		adden_index = reference.index("+");
 		decodedint = decode_int_helper(reference[adden_index+1:]);
 		if (type(decodedint) != int):
-			return {"type": "error", "value": ERR_DECODE_FAILED};
-
-		decoded["imm"] = decodedint;
-		regname = reference[:adden_index];
+			decoded["imm"] = 0;
+			decoded["sym"] = reference[adden_index+1:];
+			regname = reference[:adden_index];
+		else:
+			decoded["imm"] = decodedint;
+			regname = reference[:adden_index];
 	except Exception as e:
 		regname = reference;
 
@@ -530,6 +590,15 @@ def serialise_instruction(instruction, offset):
 						unresolved.append({"type": "rel16", "symname": symname, "address": offset + 2, "relbase": vmembase + offset});
 				else:
 					unresolved.append({"type": "abs16", "symname": symname, "address": offset + 2});
+
+		if (operand["type"] == "mem" and "sym" in operand):
+			symname = operand["sym"];
+			value = operand["value"];
+			if (symname in symbols):
+				operand = {"type": "mem", "value": value, "imm": symbols[symname]};
+			else:
+				operand = {"type": "mem", "value": value, "imm": vmembase};
+				unresolved.append({"type": "abs16", "symname": symname, "address": offset + 2});
 
 		# this needs to be simplified, very messy due to frequent changes
 		if ((letter == 'd' or letter == 'a' or letter == 'b') and operand["type"] != "reg"):
@@ -714,13 +783,27 @@ def process_file(source, output, format):
 	ofile.write(assembly);
 	ofile.close();
 
+def set_vmembase(origin):
+	global vmembase;
+	decoded = decode_int_helper(origin);
+	if (decoded == False):
+		print("Could not set origin, bad integer, origin");
+		exit();
+
+	vmembase = decoded;
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(prog="rrasm", description="Roadrunner Assembler");
 	parser.add_argument("source");
 	parser.add_argument("-o", "--output");
-	parser.add_argument("-f", "--format");
+	parser.add_argument("-f", "--format", help=formats_help);
 	parser.add_argument("-b", "--origin");
+	parser.add_argument("-e", "--entry-point");
 	parser.add_argument("-s", "--no-pie", action="store_true");
 	args = parser.parse_args();
 	pie = not args.no_pie;
+	if (args.origin != None):
+		set_vmembase(args.origin);
+	if (args.entry_point != None):
+		entrypoint_name = args.entry_point;
 	process_file(args.source, args.output, args.format);

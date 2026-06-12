@@ -1,6 +1,5 @@
 org 0x0000
 
-
 RELOCATION_ADDRESS equ 0x00A0
 
 mov r0, payload
@@ -17,10 +16,8 @@ jmpabs RELOCATION_ADDRESS
 
 payload:
 xor r0, r0
-xor r1, r1
-xor r3, r3
-addi r1, r0, 0x0000
-addi r2, r0, 0x0001
+add r1, r0, 0x0000
+add r2, r0, 0x0001
 loop:
 add r3, r1, r2
 add r1, r2, r0

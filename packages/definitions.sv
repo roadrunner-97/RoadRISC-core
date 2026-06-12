@@ -27,12 +27,12 @@ package definitions;
         OP_LDI  = 8'h17,
 	OP_LDC  = 8'h18, // for roadrunner: load control
 	OP_STC  = 8'h19, // for roadrunner: store control
-	OP_LDS  = 8'h1a, // for roadrunner: load stack
-	OP_STS  = 8'h1b, // for roadrunner: store stack
-	OP_PUSH = 8'h1c,
-	OP_POP  = 8'h1d,
-	OP_IRET = 8'h1e,
-	OP_LDIO = 8'h1f, // for roadrunner: load I/O
+	OP_LDS  = 8'h1A, // for roadrunner: load stack
+	OP_STS  = 8'h1B, // for roadrunner: store stack
+	OP_PUSH = 8'h1C,
+	OP_POP  = 8'h1D,
+	OP_IRET = 8'h1E,
+	OP_LDIO = 8'h1F, // for roadrunner: load I/O
 	OP_STIO = 8'h20, // for roadrunner: store I/O
         OP_HALT = 8'hFF
     } opcode_t;
