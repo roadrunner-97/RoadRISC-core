@@ -477,7 +477,7 @@ def elf_format_transformer(bin):
 	program_header += b"\x00\x00\x00\x07"; # protection flags
 	program_header += b"\x00\x00\x00\x00"; # alignment
 
-	program_header += b"\x00\x00\x00\x01"; # type
+	program_header += b"\x60\x00\x00\x00"; # type
 	program_header += struct.pack(">I", elf_section_offset); # segment file offset
 	program_header += struct.pack(">I", section_data_vmemaddr); # virtual address
 	program_header += struct.pack(">I", section_data_vmemaddr); # physical address
