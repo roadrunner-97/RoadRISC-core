@@ -220,6 +220,9 @@ test_29:
     bneq r4, r1, fail
     bneq r3, r4, fail
 
+test_30:
+    mov r15, 0x001E
+
 done:
     halt
 
