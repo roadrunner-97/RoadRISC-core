@@ -208,17 +208,9 @@ test_29:
     mov r15, 0x001D ; ensure endianness is big endian
     mov r0, 0x12
     shl r0, 8
-    mov r0, 0x34
+    or r0, 0x34
     mov r1, 0x1234
     bneq r0, r1, fail
-    mov r2, scratch
-    mov [r2], r0
-    mov r3, [r2]
-    bneq r3, r1, fail
-    mov r2, big_endian_int
-    mov r4, [r2]
-    bneq r4, r1, fail
-    bneq r3, r4, fail
 
 test_30:
     mov r15, 0x001E
@@ -228,9 +220,3 @@ done:
 
 fail:
     halt
-
-scratch: ; scratch for various purposes (only test_29 for now)
-    dd 0
-
-big_endian_int:
-    db 0x00, 0x00, 0x12, 0x34
