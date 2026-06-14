@@ -9,7 +9,7 @@ module top (
 
     wire [6:0]segments;
     wire segment_select;
-    logic [7:0] display_val;
+    logic [31:0] display_val;
 
     hex_display disp(
         .reset(rst),
@@ -32,7 +32,7 @@ module top (
 
     wire slow_clock;
     clock_divider
-        #(.downclock_ratio(4194304)) digit_selecter(
+        #(.downclock_ratio(262144)) cpu_slowdown(
         .in_clock(clk),
         .reset(rst),
         .out_clock(slow_clock)
@@ -42,12 +42,20 @@ module top (
    core core(
        .reset(rst),
        .clock(slow_clock),
-       .output_byte(display_val)
+       .output_word(display_val)
    );
 
 
-assign pmod1 = 'b0;
-assign pmod2 = 'b0;
+
+pmod_led_conversion led_high(
+    .value(display_val[15:8]),
+    .pmod(pmod1)
+);
+
+pmod_led_conversion led_low(
+    .value(display_val[7:0]),
+    .pmod(pmod2)
+);
 
 
 endmodule

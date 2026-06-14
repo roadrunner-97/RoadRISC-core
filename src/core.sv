@@ -121,7 +121,7 @@ module core
         pc_next = pc + 1;
 
         reg_wr_enable = '0;
-        reg_wr_select = '0;
+        reg_wr_select = controls.reg_destination;
         reg_wr_data = '0;
 
         reg_rd1_select = controls.reg_a;
@@ -133,28 +133,38 @@ module core
 
         alu_input_a = reg_rd1_data;
 
-        if(core_state == FETCH) begin
-            ram_address = pc;
-            ram_wr_enable = 'b0;
-        end
+        case(core_state)
+            FETCH: begin
+                ram_address = pc; //fetching the instruction means we're pointing at the PC
+            end
 
-        if(core_state == EXECUTE) begin
-            current_instruction = ram_read_data;
-        end
+            EXECUTE: begin
+                //now the instruction has been fetched we can decode this instruction from RAM
+                current_instruction = ram_read_data;
 
-        if(controls.reg_writeback && core_state == EXECUTE ||
-           controls.opcode == OP_LD && core_state == TRANSFER) begin
-            reg_wr_data = alu_result;
-            reg_wr_select = controls.reg_destination;
-            reg_wr_enable = '1;
-        end
+                //only writeback to registers during the execute cycle
+                //(so we don't do it again in the transfer cycle)
+                if(controls.reg_writeback) begin
+                    reg_wr_enable = '1;
+                    reg_wr_data = alu_result;
+                end
+            end
 
-        if(controls.use_immediate) begin
-            alu_input_b = controls.immediate;
-        end else begin
-            alu_input_b = reg_rd2_data;
-        end
+            TRANSFER: begin
+                if(controls.opcode == OP_LD) begin
+                    reg_wr_enable = '1;
+                end
+                if(controls.opcode == OP_ST) begin
+                    ram_address = reg_rd2_data + controls.immediate;
+                    ram_wr_enable = '1;
+                    ram_write_data = reg_rd1_data;
+                end
+            end
+        endcase
 
+        alu_input_b = controls.use_immediate ? controls.immediate : reg_rd2_data;
+
+        //jumping commands
         if(controls.jump) begin
             case(controls.opcode)
                 OP_JMP: begin
@@ -170,6 +180,7 @@ module core
             endcase
         end
 
+        //branching commands
         if(controls.branch) begin
             if((controls.opcode == OP_BEQ && alu_equal) || 
                (controls.opcode == OP_BLT && alu_less_than)) begin
@@ -180,12 +191,6 @@ module core
         if(controls.mem_read && core_state != FETCH ) begin //we can't be doing memory access during PC fetch state
             ram_address = addr_t'(reg_rd1_data + controls.immediate);
             reg_wr_data = ram_read_data;
-        end
-
-        if(controls.mem_write && core_state == TRANSFER) begin
-            ram_address = reg_rd2_data + controls.immediate;
-            ram_wr_enable = '1;
-            ram_write_data = reg_rd1_data;
         end
 
         if(controls.opcode == OP_LDI) begin
