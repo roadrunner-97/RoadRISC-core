@@ -41,8 +41,6 @@ module core
     logic alu_less_than;
     opcode_t curr_opcode;
 
-    word_t signed_immediate;
-
     mmap #(
         .RAM_SIZE(1024),
         .FILE("src/program.hex")
@@ -70,7 +68,8 @@ module core
         .read_2_data(reg_rd2_data),
         .write_select(reg_wr_select),
         .write_data(reg_wr_data),
-        .write_enable(reg_wr_enable)
+        .write_enable(reg_wr_enable),
+        .debug(debug)
     );
 
     alu alu(
@@ -83,7 +82,8 @@ module core
     );
 
     assign curr_opcode = controls.opcode;
-    assign output_byte = pc[7:0];
+    word_t debug;
+    assign output_byte = debug;
 
 
     cpu_core_state_t core_state;
@@ -116,6 +116,7 @@ module core
     end
 
     always_comb begin
+        output_byte = debug[7:0];
         pc_next = pc + 1;
 
         reg_wr_enable = '0;
@@ -155,7 +156,6 @@ module core
                     reg_wr_data = pc + 1;
                 end
                 OP_JREL: begin
-                    signed_immediate = 32'($signed(controls.immediate[15:0]));
                     pc_next = pc + 32'($signed(controls.immediate[15:0]));
                 end
             endcase

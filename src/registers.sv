@@ -11,7 +11,8 @@ module registers(
 
     input reg_addr_t write_select,
     input word_t write_data,
-    input logic write_enable
+    input logic write_enable,
+    output word_t debug
 );
 
     word_t registers[REG_COUNT];
@@ -35,6 +36,7 @@ module registers(
     assign r13 = registers[13];
     assign r14 = registers[14];
     assign r15 = registers[15];
+    assign debug = registers[1];
 
     integer i;
     initial begin
