@@ -5,3 +5,9 @@ __pycache__/
 .venv/
 *.gprj.*
 *.user
+
+src/gowin_dpb/*
+
+src/hardware/program.mi
+
+roadrisc.gprj
