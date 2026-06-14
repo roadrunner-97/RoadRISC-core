@@ -10,6 +10,10 @@ module core
 //rom controls
     addr_t pc;
     addr_t pc_next;
+
+    addr_t sp;
+    addr_t sp_next;
+
     instruction_t current_instruction;
     instruction_t instruction_reg;
     decoded_instruction_t controls;
@@ -87,6 +91,7 @@ module core
         if(reset) begin
             pc <= RESET_ADDRRESS;
             core_state <= FETCH;
+            sp <= 'hFFFF;
         end else begin
             case(core_state)
                 FETCH: begin
@@ -99,12 +104,14 @@ module core
                     end else begin
                         core_state <= FETCH;
                         pc <= pc_next;
+                        sp <= sp_next;
                     end
                 end
 
                 TRANSFER: begin
                     core_state <= FETCH;
                     pc <= pc_next;
+                    sp <= sp_next;
                 end
             endcase
         end
@@ -121,6 +128,7 @@ module core
     always_comb begin
         current_instruction = instruction_reg;
         pc_next = pc + 1;
+        sp_next = sp;
 
         reg_wr_enable = '0;
         reg_wr_select = controls.reg_destination;
@@ -156,10 +164,32 @@ module core
                 if(controls.opcode == OP_LD) begin
                     reg_wr_enable = '1;
                 end
+                if(controls.opcode == OP_POP) begin
+                    reg_wr_enable = '1;
+                end
+
                 if(controls.opcode == OP_ST) begin
                     ram_address = reg_rd2_data + controls.immediate;
                     ram_wr_enable = '1;
                     ram_write_data = reg_rd1_data;
+                end
+
+                if(controls.opcode == OP_PUSH) begin
+                    ram_address = sp - 1;
+                    ram_wr_enable = '1;
+                    ram_write_data = reg_rd1_data;
+                end
+
+                if(controls.opcode == OP_CALL) begin
+                    ram_address = sp - 1;
+                    ram_wr_enable = '1;
+                    ram_write_data = pc + 1;
+                end
+
+                if(controls.opcode == OP_RET) begin
+                    ram_address = sp;
+                    pc_next = ram_read_data;
+                    sp_next = sp + 1;
                 end
             end
         endcase
@@ -179,6 +209,12 @@ module core
                 OP_JREL: begin
                     pc_next = pc + 32'($signed(controls.immediate[15:0]));
                 end
+                OP_CALL: begin
+                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
+                end
+                OP_RET: begin
+                    pc_next = ram_read_data;
+                end
             endcase
         end
 
@@ -193,12 +229,38 @@ module core
         end
 
         if(controls.mem_read && core_state != FETCH ) begin //we can't be doing memory access during PC fetch state
-            ram_address = addr_t'(reg_rd1_data + controls.immediate);
             reg_wr_data = ram_read_data;
+            if(controls.opcode == OP_LD) begin
+                ram_address = addr_t'(reg_rd1_data + controls.immediate);
+            end else if (controls.opcode == OP_POP) begin
+                ram_address = sp;
+                sp_next = sp + 1;
+            end else if (controls.opcode == OP_RET) begin
+                ram_address = sp;
+            end
+        end
+
+        if (controls.mem_write && core_state != FETCH) begin
+            if(controls.opcode == OP_PUSH || 
+               controls.opcode == OP_CALL) begin
+                sp_next = sp - 1;
+            end
         end
 
         if(controls.opcode == OP_LDI) begin
             reg_wr_data = controls.immediate;
+        end
+
+        if(controls.opcode == OP_STS) begin
+            sp_next = reg_rd1_data;
+        end
+
+        if(controls.opcode == OP_LDS) begin
+            reg_wr_data = sp;
+        end
+
+        if(controls.halt) begin
+            pc_next = pc;
         end
     end
 

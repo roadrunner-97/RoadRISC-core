@@ -38,3 +38,11 @@
 0x16  JREL  #imm             PC += (signed) imm, relative jump
 0x18  BNEQ  Ra, Rd, #imm     if Ra != Rd: PC += imm  signed, PC-relative
 0x19  BGT   Ra, Rd, #imm     if Ra > Rd:  PC += imm  unsigned comparison
+
+# stack operations
+0x1A  LDS   Rd               Rd = Sp
+0x1B  STS   Ra               Sp = Ra
+0x1C  PUSH  Ra               Sp = Sp - 1, then  mem[Sp] = Ra
+0x1D  POP   Rd               Rd = mem[Sp], then Sp = Sp + 1
+0x1E  CALL  #imm             Sp = Sp - 1, then mem[Sp] = Pc + 1, then Pc = Pc + (signed)imm
+0x1F  RET                    Pc = mem[Sp], then Sp = Sp + 1

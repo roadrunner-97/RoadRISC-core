@@ -27,6 +27,12 @@ package definitions;
         OP_LDI  = 8'h17,
         OP_BNEQ = 8'h18,
         OP_BGT  = 8'h19,
+        OP_LDS  = 8'h1A,
+        OP_STS  = 8'h1B,
+        OP_PUSH = 8'h1C,
+        OP_POP  = 8'h1D,
+        OP_CALL = 8'h1E,
+        OP_RET  = 8'h1F,
         OP_HALT  = 8'hFF
     } opcode_t;
 
