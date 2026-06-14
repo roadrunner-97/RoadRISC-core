@@ -38,6 +38,7 @@ module core
     word_t alu_result;
     logic alu_equal;
     logic alu_less_than;
+    logic alu_greater_than;
     opcode_t curr_opcode;
 
     mmap #(
@@ -74,7 +75,8 @@ module core
         .opcode(controls.opcode),
         .result(alu_result),
         .equal(alu_equal),
-        .less_than(alu_less_than)
+        .less_than(alu_less_than),
+        .greater_than(alu_greater_than)
     );
 
     assign curr_opcode = controls.opcode;
@@ -183,7 +185,9 @@ module core
         //branching commands
         if(controls.branch) begin
             if((controls.opcode == OP_BEQ && alu_equal) || 
-               (controls.opcode == OP_BLT && alu_less_than)) begin
+               (controls.opcode == OP_BLT && alu_less_than ||
+                controls.opcode == OP_BNEQ && ~alu_equal ||
+                controls.opcode == OP_BGT && alu_greater_than)) begin
                     pc_next = pc + 32'($signed(controls.immediate[15:0]));
             end
         end

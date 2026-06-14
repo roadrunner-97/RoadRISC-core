@@ -36,3 +36,5 @@
 0x14  JMP   #imm             PC = imm, absolute jump
 0x15  JAL   Rd, #imm         Rd = PC+1; PC = imm  Rd holds return address
 0x16  JREL  #imm             PC += (signed) imm, relative jump
+0x18  BNEQ  Ra, Rd, #imm     if Ra != Rd: PC += imm  signed, PC-relative
+0x19  BGT   Ra, Rd, #imm     if Ra > Rd:  PC += imm  unsigned comparison

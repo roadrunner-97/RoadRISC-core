@@ -25,6 +25,8 @@ package definitions;
         OP_JAL  = 8'h15,
         OP_JREL = 8'h16,
         OP_LDI  = 8'h17,
+        OP_BNEQ = 8'h18,
+        OP_BGT  = 8'h19,
         OP_HALT  = 8'hFF
     } opcode_t;
 

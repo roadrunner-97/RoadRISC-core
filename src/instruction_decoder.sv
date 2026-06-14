@@ -44,9 +44,10 @@ module instruction_decoder
 
         if(in.opcode == OP_LD) out.mem_read = '1;
         if(in.opcode == OP_ST) out.mem_write = '1;
-        if(in.opcode == OP_BEQ || in.opcode == OP_BLT) begin
+        if(in.opcode == OP_BEQ || in.opcode == OP_BLT ||
+           in.opcode == OP_BNEQ || in.opcode == OP_BGT) begin
                 out.immediate = in.operand.imm;
-		out.branch = '1;
+		        out.branch = '1;
 	end
         if(in.opcode == OP_JMP ||
            in.opcode == OP_JAL ||

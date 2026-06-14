@@ -7,12 +7,14 @@ module alu
     input opcode_t opcode,
     output word_t result,
     output logic equal,
-    output logic less_than
+    output logic less_than,
+    output logic greater_than
 );
 
     always_comb begin
         equal = input_a == input_b;
         less_than = input_a < input_b;
+        greater_than = input_a > input_b;
         case (opcode)
 
             OP_ADD, OP_ADDI: begin
