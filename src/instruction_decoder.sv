@@ -37,7 +37,7 @@ module instruction_decoder
         endcase
 
         case(in.opcode)
-            OP_LD, OP_ST, OP_BEQ, OP_BLT: begin
+            OP_LD, OP_ST, OP_BEQ, OP_BLT, OP_BNEQ, OP_BGT: begin
                 out.reg_b = in.reg_destination;
             end
         endcase
