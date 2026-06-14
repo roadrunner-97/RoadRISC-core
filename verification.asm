@@ -197,10 +197,11 @@ jrel_ok:
 test_28:
     mov r15, 0x001C ; JAL: must jump to target with return address in r14
     jal r14, jal_target
+jal_expected_return:
     jmp fail
 jal_target:
-    mov r0, 0x0000
-    bneq r14, r0, done  ; r14 should be non-zero return address
+    mov r0, jal_expected_return
+    beq r14, r0, done  ; r14 should be jal_expected_return
     jmp fail
 
 done:
