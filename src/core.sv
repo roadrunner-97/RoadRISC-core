@@ -4,7 +4,7 @@ module core
 (
     input logic reset,
     input logic clock,
-    output logic[7:0] output_byte
+    output word_t output_word
 );
 
 //rom controls
@@ -65,7 +65,7 @@ module core
         .write_select(reg_wr_select),
         .write_data(reg_wr_data),
         .write_enable(reg_wr_enable),
-        .debug(debug)
+        .debug(output_word)
     );
 
     alu alu(
@@ -78,8 +78,6 @@ module core
     );
 
     assign curr_opcode = controls.opcode;
-    word_t debug;
-
 
     cpu_core_state_t core_state;
 
@@ -119,7 +117,6 @@ module core
     end
 
     always_comb begin
-        output_byte = debug[7:0];
         current_instruction = instruction_reg;
         pc_next = pc + 1;
 

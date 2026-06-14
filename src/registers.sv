@@ -36,7 +36,7 @@ module registers(
     assign r13 = registers[13];
     assign r14 = registers[14];
     assign r15 = registers[15];
-    assign debug = registers[1];
+    assign debug = registers[15];
 
     integer i;
     initial begin
