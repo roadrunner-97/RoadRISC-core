@@ -214,9 +214,64 @@ test_29:
 
 test_30:
     mov r15, 0x001E
+    mov r3, 0xF00F
+    sts r3  ; stack pointer now at F00F
+
+    lds r1  ; r1 now at F00F
+    bneq r3, r1, fail
+
+test_31:
+    mov r15, 0x001F
+
+    mov r3, 0x0400
+    sts r3
+
+    mov r1, 0xBABE
+    mov r3, 0xBABE
+    mov r2, 0xEEFE
+    mov r4, 0xEEFE
+    push r2
+    push r1
+    nop
+    pop r2
+    pop r1
+    bneq r1, r4, fail
+    bneq r2, r3, fail
+
+test_32:
+    mov r15, 0x0020
+
+    mov r3, 0x0400
+    sts r3
+
+    mov r0, 0x22
+    push r0
+    mov r0, 0x20
+    push r0
+
+    call test_addnumbers
+    mov r10, sp
+    add r10, 2
+    mov sp, r10
+
+    mov r0, 0x42
+    bneq r0, r1, fail
+
+test_33:
+    mov r15, 0x0021
+    halt
+
 
 done:
     halt
 
 fail:
     halt
+
+
+test_addnumbers: ; clobbers r1 ? 
+    mov r0, sp
+    mov r1, [r0 + 1]
+    mov r2, [r0 + 2]
+    add r1, r2
+    ret
