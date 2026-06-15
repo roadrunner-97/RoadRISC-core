@@ -1,7 +1,6 @@
 # 32-bit instruction, 16-bit data
 # [31:24] opcode | [23:20] Rd | [19:16] Ra | [15:12] Rb  (R-type)
 #                                          | [15:0]  imm (I-type)
-# opcode[0] == 1 → immediate operand
 
 # special
 0x00  NOP                    no operation

@@ -212,9 +212,6 @@ module core
                 OP_CALL: begin
                     pc_next = pc + 32'($signed(controls.immediate[15:0]));
                 end
-                OP_RET: begin
-                    pc_next = ram_read_data;
-                end
             endcase
         end
 
