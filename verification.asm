@@ -223,7 +223,7 @@ test_30:
 test_31:
     mov r15, 0x001F
 
-    mov r3, 0x0400
+    mov r3, 0x1A00
     sts r3
 
     mov r1, 0xBABE
@@ -241,7 +241,7 @@ test_31:
 test_32:
     mov r15, 0x0020
 
-    mov r3, 0x0400
+    mov r3, 0x1A00
     sts r3
 
     mov r0, 0x22
@@ -271,19 +271,29 @@ test_34:
     mov r4, str_hello
     mov r5, r12
     call draw_string
-    add r12, r12, 320
+    add r12, r12, 400
 
     mov r4, str_fox1
     mov r5, r12
     call draw_string
-    add r12, r12, 320
+    add r12, r12, 400
 
     mov r4, str_fox2
     mov r5, r12
     call draw_string
-    add r12, r12, 320
+    add r12, r12, 400
 
-    add r12, r12, 320        ; blank row
+    mov r4, str_roadrisc
+    mov r5, r12
+    call draw_string
+    add r12, r12, 400
+
+    mov r4, str_roadrisc2
+    mov r5, r12
+    call draw_string
+    add r12, r12, 400
+
+    add r12, r12, 400        ; blank row
 
     mov r5, r12
     call draw_glyph_dump
@@ -386,6 +396,12 @@ str_fox1:
 
 str_fox2:
     dd "jumped over the lazy dog", 0
+
+str_roadrisc:
+    dd "Roadrisc-32 CPU by roadrunner", 0
+
+str_roadrisc2:
+    dd "program assembled on lemonASM by lemon", 0
 
 
 ; ASCII 0x20-0x7E glyphs, pre-expanded to 4bpp, 8 words each
@@ -559,7 +575,7 @@ glyph_32:
     dd 0x0000FF00
     dd 0x00FFF000
     dd 0x0FF00000
-    dd 0xFF00FF00
+    dd 0xFF000000
     dd 0xFFFFFF00
     dd 0x00000000
 glyph_33:
@@ -683,7 +699,7 @@ glyph_40:
     dd 0x0FFFFF00
     dd 0xFF000FF0
     dd 0xFF0FFFF0
-    dd 0xFF0FFFF0
+    dd 0xFF0F00F0
     dd 0xFF0FFFF0
     dd 0xFF000000
     dd 0x0FFFF000
@@ -874,8 +890,8 @@ glyph_55:
     dd 0xFF00FF00
     dd 0xFF00FF00
     dd 0xFF00FF00
-    dd 0xFF00FF00
-    dd 0xFFFFFF00
+    dd 0xFF44FF00
+    dd 0x2FFFF200
     dd 0x00000000
 glyph_56:
     dd 0xFF00FF00
@@ -1200,7 +1216,7 @@ glyph_79:
     dd 0x0FF00FF0
     dd 0x00FFFFF0
     dd 0x00000FF0
-    dd 0x0FFFFF00
+    dd 0x000FFFF0
 glyph_7A:
     dd 0x00000000
     dd 0x00000000
