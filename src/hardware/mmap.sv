@@ -9,7 +9,10 @@ module mmap #(
     input addr_t memory_address,
     input word_t memory_write_data,
     output word_t memory_read_data,
-    input logic write_enable
+    input logic write_enable,
+
+    input addr_t vga_address,
+    output word_t vga_data
 );
 
     word_t address_unused;
@@ -29,13 +32,13 @@ module mmap #(
         .dina   (memory_write_data),
 
         // Port B — instruction fetch (32-bit, read only)
-        .doutb  (address_unused),
-        .clkb   (1'b0),
+        .doutb  (vga_data),
+        .clkb   (clock),
         .oceb   (1'b1),
         .ceb    (1'b1),
         .resetb (1'b0),
         .wreb   (1'b0),
-        .adb    ('b0),
+        .adb    (vga_address),
         .dinb   (32'h0)
     );
 
