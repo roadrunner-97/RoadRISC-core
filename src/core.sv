@@ -4,7 +4,10 @@ module core
 (
     input logic reset,
     input logic clock,
-    output word_t output_word
+    output word_t output_word,
+    //vga data just passing through
+    input addr_t vga_address,
+    output word_t vga_data
 );
 
 //rom controls
@@ -53,7 +56,9 @@ module core
         .memory_address(ram_address),
         .memory_read_data(ram_read_data),
         .memory_write_data(ram_write_data),
-        .write_enable(ram_wr_enable)
+        .write_enable(ram_wr_enable),
+        .vga_address(vga_address),
+        .vga_data(vga_data)
     );
 
     instruction_decoder idc(
