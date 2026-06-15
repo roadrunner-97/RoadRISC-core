@@ -23,7 +23,7 @@ module instruction_decoder
         case(in.opcode)
             OP_ADD, OP_ADDI, OP_SUB, OP_SUBI, OP_AND, OP_ANDI, OP_OR, OP_ORI,
             OP_XOR, OP_XORI, OP_SHL, OP_SHLI, OP_SHR, OP_SHRI, OP_LD, OP_LDI,
-            OP_JAL, OP_LDS, OP_POP:
+            OP_JAL, OP_LDS, OP_POP, OP_MULL, OP_MULU:
 		out.reg_writeback = '1;
         endcase
 

@@ -45,3 +45,8 @@
 0x1D  POP   Rd               Rd = mem[Sp], then Sp = Sp + 1
 0x1E  CALL  #imm             Sp = Sp - 1, then mem[Sp] = Pc + 1, then Pc = Pc + (signed)imm
 0x1F  RET                    Pc = mem[Sp], then Sp = Sp + 1
+
+# more ALU instructions (for now)
+0x42  MUL   Rd, Ra, Rb         Functionally a NOP for now
+0x43  MULU  Rd, Ra, Rb         Rd = Ra * Rb (upper 32 bits of result)
+0x44  MULL  Rd, Ra, Rb         Rd = Ra * Rb (lower 32 bits of result)

@@ -1,0 +1,487 @@
+//Copyright (C)2014-2025 Gowin Semiconductor Corporation.
+//All rights reserved.
+//File Title: Post-PnR Verilog Simulation Model file
+//Tool Version: V1.9.11.03 Education
+//Created Time: Sat Jun 20 10:25:37 2026
+
+`timescale 100 ps/100 ps
+module Integer_Multiplier_Top(
+	mul_a,
+	mul_b,
+	product
+);
+input [31:0] mul_a;
+input [31:0] mul_b;
+output [63:0] product;
+wire GND;
+wire VCC;
+wire [31:0] mul_a;
+wire [31:0] mul_b;
+wire [63:0] product;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_26_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_27_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_28_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_29_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_30_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_31_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_32_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_33_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_34_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_35_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_36_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_37_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_38_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_39_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_40_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_41_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_42_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_43_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_44_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_45_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_46_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_47_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_48_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_49_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_50_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_51_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_52_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_53_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_54_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_55_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_56_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_57_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_58_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_59_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_60_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_61_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_62_3 ;
+wire \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_63_0_COUT ;
+wire [62:26] \integer_multiplier_inst/integer_multiplier_DSP_inst/product1 ;
+wire [37:0] \integer_multiplier_inst/integer_multiplier_DSP_inst/product2 ;
+wire [62:38] \integer_multiplier_inst/integer_multiplier_DSP_inst/DOUT ;
+VCC VCC_cZ (
+  .V(VCC)
+);
+GND GND_cZ (
+  .G(GND)
+);
+GSR GSR (
+	.GSRI(VCC)
+);
+MULT27X36 \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3  (
+	.DOUT({\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [62:26], product[25:0]}),
+	.PADDSUB(GND),
+	.PSEL(GND),
+	.A({GND, mul_b[25:0]}),
+	.B({GND, GND, GND, GND, mul_a[31:0]}),
+	.D({GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND}),
+	.CLK({GND, GND}),
+	.CE({VCC, VCC}),
+	.RESET({GND, GND})
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .OREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .OREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .OREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .MULT_RESET_MODE="SYNC";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .AREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .AREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .AREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .BREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .BREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .BREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .DREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .DREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .DREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PADDSUB_IREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PADDSUB_IREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PADDSUB_IREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PSEL_IREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PSEL_IREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .PSEL_IREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .DYN_P_SEL="FALSE";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .P_SEL=1'b0;
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .DYN_P_ADDSUB="FALSE";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s3 .P_ADDSUB=1'b0;
+MULT27X36 \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4  (
+	.DOUT({\integer_multiplier_inst/integer_multiplier_DSP_inst/DOUT [62:38], \integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [37:0]}),
+	.PADDSUB(GND),
+	.PSEL(GND),
+	.A({GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, mul_b[31:26]}),
+	.B({GND, GND, GND, GND, mul_a[31:0]}),
+	.D({GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND, GND}),
+	.CLK({GND, GND}),
+	.CE({VCC, VCC}),
+	.RESET({GND, GND})
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .OREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .OREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .OREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .MULT_RESET_MODE="SYNC";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .AREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .AREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .AREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .BREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .BREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .BREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .DREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .DREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .DREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PADDSUB_IREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PADDSUB_IREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PADDSUB_IREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PSEL_IREG_CLK="BYPASS";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PSEL_IREG_CE="CE0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .PSEL_IREG_RESET="RESET0";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .DYN_P_SEL="FALSE";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .P_SEL=1'b0;
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .DYN_P_ADDSUB="FALSE";
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_63_s4 .P_ADDSUB=1'b0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_26_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [26]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [0]),
+	.I3(GND),
+	.CIN(GND),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_26_3 ),
+	.SUM(product[26])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_26_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_27_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [27]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [1]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_26_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_27_3 ),
+	.SUM(product[27])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_27_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_28_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [28]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [2]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_27_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_28_3 ),
+	.SUM(product[28])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_28_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_29_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [29]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [3]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_28_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_29_3 ),
+	.SUM(product[29])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_29_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_30_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [30]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [4]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_29_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_30_3 ),
+	.SUM(product[30])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_30_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_31_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [31]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [5]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_30_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_31_3 ),
+	.SUM(product[31])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_31_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_32_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [32]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [6]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_31_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_32_3 ),
+	.SUM(product[32])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_32_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_33_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [33]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [7]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_32_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_33_3 ),
+	.SUM(product[33])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_33_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_34_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [34]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [8]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_33_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_34_3 ),
+	.SUM(product[34])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_34_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_35_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [35]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [9]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_34_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_35_3 ),
+	.SUM(product[35])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_35_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_36_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [36]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [10]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_35_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_36_3 ),
+	.SUM(product[36])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_36_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_37_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [37]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [11]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_36_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_37_3 ),
+	.SUM(product[37])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_37_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_38_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [38]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [12]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_37_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_38_3 ),
+	.SUM(product[38])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_38_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_39_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [39]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [13]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_38_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_39_3 ),
+	.SUM(product[39])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_39_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_40_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [40]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [14]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_39_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_40_3 ),
+	.SUM(product[40])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_40_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_41_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [41]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [15]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_40_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_41_3 ),
+	.SUM(product[41])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_41_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_42_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [42]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [16]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_41_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_42_3 ),
+	.SUM(product[42])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_42_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_43_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [43]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [17]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_42_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_43_3 ),
+	.SUM(product[43])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_43_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_44_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [44]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [18]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_43_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_44_3 ),
+	.SUM(product[44])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_44_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_45_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [45]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [19]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_44_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_45_3 ),
+	.SUM(product[45])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_45_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_46_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [46]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [20]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_45_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_46_3 ),
+	.SUM(product[46])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_46_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_47_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [47]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [21]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_46_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_47_3 ),
+	.SUM(product[47])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_47_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_48_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [48]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [22]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_47_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_48_3 ),
+	.SUM(product[48])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_48_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_49_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [49]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [23]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_48_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_49_3 ),
+	.SUM(product[49])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_49_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_50_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [50]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [24]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_49_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_50_3 ),
+	.SUM(product[50])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_50_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_51_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [51]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [25]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_50_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_51_3 ),
+	.SUM(product[51])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_51_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_52_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [52]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [26]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_51_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_52_3 ),
+	.SUM(product[52])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_52_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_53_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [53]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [27]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_52_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_53_3 ),
+	.SUM(product[53])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_53_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_54_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [54]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [28]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_53_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_54_3 ),
+	.SUM(product[54])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_54_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_55_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [55]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [29]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_54_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_55_3 ),
+	.SUM(product[55])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_55_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_56_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [56]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [30]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_55_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_56_3 ),
+	.SUM(product[56])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_56_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_57_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [57]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [31]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_56_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_57_3 ),
+	.SUM(product[57])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_57_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_58_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [58]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [32]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_57_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_58_3 ),
+	.SUM(product[58])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_58_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_59_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [59]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [33]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_58_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_59_3 ),
+	.SUM(product[59])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_59_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_60_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [60]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [34]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_59_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_60_3 ),
+	.SUM(product[60])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_60_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_61_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [61]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [35]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_60_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_61_3 ),
+	.SUM(product[61])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_61_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_62_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [62]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [36]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_61_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_62_3 ),
+	.SUM(product[62])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_62_s .ALU_MODE=0;
+ALU \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_63_s  (
+	.I0(\integer_multiplier_inst/integer_multiplier_DSP_inst/product1 [62]),
+	.I1(\integer_multiplier_inst/integer_multiplier_DSP_inst/product2 [37]),
+	.I3(GND),
+	.CIN(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_62_3 ),
+	.COUT(\integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_63_0_COUT ),
+	.SUM(product[63])
+);
+defparam \integer_multiplier_inst/integer_multiplier_DSP_inst/product_d_63_s .ALU_MODE=0;
+endmodule

@@ -9,11 +9,11 @@ version=1.0
 [Config]
 Area=true
 BYTE_SIZE=0
-DEPTH_A=16184
-DEPTH_B=16184
+DEPTH_A=16384
+DEPTH_B=16384
 DIMENSION_MATCH=65
 LANG=0
-MEM_FILE=../hardware/program.mi
+MEM_FILE=../../program.mi
 READ_A=0
 READ_B=0
 RESET_MODE=true
