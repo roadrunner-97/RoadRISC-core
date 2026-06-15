@@ -29,14 +29,6 @@ module top (
     assign pmod0[0] = segments[6];
 
 
-    wire slow_clock;
-    clock_divider
-        #(.downclock_ratio(262144)) cpu_slowdown(
-        .in_clock(clk),
-        .reset(rst),
-        .out_clock(slow_clock)
-    );
-
     addr_t vga_address;
     word_t vga_data;
     logic [3:0] red, green, blue;

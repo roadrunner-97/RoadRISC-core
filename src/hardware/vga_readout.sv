@@ -43,11 +43,14 @@ module vga_readout (
     end
 
     always_ff @(posedge clock) begin
-        if(pixel_address[2:0] == 3'b111 && pixel_phase) begin
-            //we're in the 2nd clock of the last pixel in a word, prefetch the new word
-            fb_address <= 'h1A80 + (pixel_address / 8) + 1;  // assuming 8 pixels per memory word
+        if(hpos == 799) begin
+            // Prime the start of the next scanline before hpos rolls over.
+            // vpos[0] advances fb_y on odd lines; even lines repeat the same row (line doubling).
+            fb_address <= 'h1A80 + (fb_y + vpos[0]) * 40;
+        end else if(hpos[3:0] == 4'hF) begin
+            fb_address <= 'h1A80 + (pixel_address / 8) + 1;
         end else begin
-            fb_address <= 'h1A80 + (pixel_address / 8);  // assuming 8 pixels per memory word
+            fb_address <= 'h1A80 + (pixel_address / 8);
         end
     end
 
