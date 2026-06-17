@@ -20,13 +20,20 @@ module core
     instruction_t current_instruction;
     instruction_t instruction_reg;
     decoded_instruction_t controls;
+    cpu_core_state_t core_state;
+
 
 // ram controls
 
-    addr_t ram_address;
-    word_t ram_read_data;
-    word_t ram_write_data;
-    logic ram_wr_enable;
+    addr_t intended_ram_address;
+    word_t intended_ram_read_data;
+    word_t intended_ram_write_data;
+    logic intended_ram_wr_enable;
+
+    addr_t actual_ram_address;
+    word_t actual_ram_read_data;
+    word_t actual_ram_write_data;
+    logic actual_ram_wr_enable;
 
 // register controls
     reg_addr_t reg_rd1_select;
@@ -48,15 +55,43 @@ module core
     logic alu_greater_than;
     opcode_t curr_opcode;
 
+    logic version_requested;
+    word_t version_data;
+
+    version version
+    (
+        .clock(clock),
+        .version_requested(version_requested),
+        .version_data(version_data)
+    );
+
+//i'm going to need to merge related signals into busses
+    memory_watchman watchman
+    (
+        .clock(clock),
+        .reset(reset),
+        .core_state(core_state),
+        .core_address(intended_ram_address),
+        .core_write_data(intended_ram_write_data),
+        .core_read_data(intended_ram_read_data),
+        .core_write_enable(intended_ram_wr_enable),
+        .mmap_address(actual_ram_address),
+        .mmap_write_data(actual_ram_write_data),
+        .mmap_read_data(actual_ram_read_data),
+        .mmap_write_enable(actual_ram_wr_enable),
+        .version_command_requested(version_requested),
+        .version_command_response(version_data)
+    );
+
     mmap #(
         .RAM_SIZE(1024),
         .FILE("src/program.hex")
     ) mmap(
         .clock(clock),
-        .memory_address(ram_address),
-        .memory_read_data(ram_read_data),
-        .memory_write_data(ram_write_data),
-        .write_enable(ram_wr_enable),
+        .memory_address(actual_ram_address),
+        .memory_read_data(actual_ram_read_data),
+        .memory_write_data(actual_ram_write_data),
+        .write_enable(actual_ram_wr_enable),
         .vga_address(vga_address),
         .vga_data(vga_data)
     );
@@ -90,7 +125,6 @@ module core
 
     assign curr_opcode = controls.opcode;
 
-    cpu_core_state_t core_state;
 
     always_ff @(posedge clock) begin
         if(reset) begin
@@ -126,7 +160,7 @@ module core
     // stay stable through TRANSFER (where stores still need them)
     always_ff @(posedge clock) begin
         if(core_state == EXECUTE) begin
-            instruction_reg <= ram_read_data;
+            instruction_reg <= intended_ram_read_data;
         end
     end
 
@@ -142,20 +176,20 @@ module core
         reg_rd1_select = controls.reg_a;
         reg_rd2_select = controls.reg_b;
 
-        ram_address = '0;
-        ram_wr_enable = '0;
-        ram_write_data = '0;
+        intended_ram_address = '0;
+        intended_ram_wr_enable = '0;
+        intended_ram_write_data = '0;
 
         alu_input_a = reg_rd1_data;
 
         case(core_state)
             FETCH: begin
-                ram_address = pc; //fetching the instruction means we're pointing at the PC
+                intended_ram_address = pc; //fetching the instruction means we're pointing at the PC
             end
 
             EXECUTE: begin
                 //now the instruction has been fetched we can decode this instruction from RAM
-                current_instruction = ram_read_data;
+                current_instruction = intended_ram_read_data;
 
                 //only writeback to registers during the execute cycle
                 //(so we don't do it again in the transfer cycle)
@@ -174,26 +208,26 @@ module core
                 end
 
                 if(controls.opcode == OP_ST) begin
-                    ram_address = reg_rd2_data + controls.immediate;
-                    ram_wr_enable = '1;
-                    ram_write_data = reg_rd1_data;
+                    intended_ram_address = reg_rd2_data + controls.immediate;
+                    intended_ram_wr_enable = '1;
+                    intended_ram_write_data = reg_rd1_data;
                 end
 
                 if(controls.opcode == OP_PUSH) begin
-                    ram_address = sp - 1;
-                    ram_wr_enable = '1;
-                    ram_write_data = reg_rd1_data;
+                    intended_ram_address = sp - 1;
+                    intended_ram_wr_enable = '1;
+                    intended_ram_write_data = reg_rd1_data;
                 end
 
                 if(controls.opcode == OP_CALL) begin
-                    ram_address = sp - 1;
-                    ram_wr_enable = '1;
-                    ram_write_data = pc + 1;
+                    intended_ram_address = sp - 1;
+                    intended_ram_wr_enable = '1;
+                    intended_ram_write_data = pc + 1;
                 end
 
                 if(controls.opcode == OP_RET) begin
-                    ram_address = sp;
-                    pc_next = ram_read_data;
+                    intended_ram_address = sp;
+                    pc_next = intended_ram_read_data;
                     sp_next = sp + 1;
                 end
             end
@@ -231,14 +265,14 @@ module core
         end
 
         if(controls.mem_read && core_state != FETCH ) begin //we can't be doing memory access during PC fetch state
-            reg_wr_data = ram_read_data;
+            reg_wr_data = intended_ram_read_data;
             if(controls.opcode == OP_LD) begin
-                ram_address = addr_t'(reg_rd1_data + controls.immediate);
+                intended_ram_address = addr_t'(reg_rd1_data + controls.immediate);
             end else if (controls.opcode == OP_POP) begin
-                ram_address = sp;
+                intended_ram_address = sp;
                 sp_next = sp + 1;
             end else if (controls.opcode == OP_RET) begin
-                ram_address = sp;
+                intended_ram_address = sp;
             end
         end
 

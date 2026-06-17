@@ -84,4 +84,9 @@ package definitions;
         logic      halt;
     } decoded_instruction_t;
 
+    localparam int VERSION_REQUEST_ADDR = 16'hFFFF;
+
+    localparam int UART_FLAG_REQUEST_ADDR = 16'hFFF0;
+    localparam int UART_RX_REQUEST_ADDR = 16'hFFF1;
+
 endpackage

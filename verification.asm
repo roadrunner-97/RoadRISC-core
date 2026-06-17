@@ -260,9 +260,6 @@ test_32:
 test_33:
     mov r15, 0x0021
 
-test_34:
-    mov r15, 0x0022
-
     mov r0, 0x1A00
     mov sp, r0
 
@@ -298,9 +295,15 @@ test_34:
     mov r5, r12
     call draw_glyph_dump
 
+test_34:
+    mov r15, 0x0022
+    mov r1, 0xF00F
+    mov r0, 0xFFFF
+    mov r2, [r0]
+    bneq r1, r2, fail
+
     mov r15, 0x0023
     halt
-
 
 done:
     halt
