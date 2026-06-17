@@ -2,22 +2,15 @@ import definitions::*;
 
 module registers(
     input logic clock,
-    
-    input reg_addr_t read_1_select,
-    output word_t read_1_data,
-
-    input reg_addr_t read_2_select,
-    output word_t read_2_data,
-
-    input reg_addr_t write_select,
-    input word_t write_data,
-    input logic write_enable,
+    reg_rd_if.regfile rd1,
+    reg_rd_if.regfile rd2,
+    reg_wr_if.regfile wr,
     output word_t debug
 );
 
     word_t registers[REG_COUNT];
 
-    //debug ports to view in gtkwave
+    // debug nets for gtkwave
     word_t r0, r1, r2, r3, r4, r5, r6, r7;
     word_t r8, r9, r10, r11, r12, r13, r14, r15;
     assign r0  = registers[0];
@@ -44,13 +37,11 @@ module registers(
             registers[i] = '0;
     end
 
-
-    assign read_1_data = registers[read_1_select];
-    assign read_2_data = registers[read_2_select];
+    assign rd1.data = registers[rd1.select];
+    assign rd2.data = registers[rd2.select];
 
     always_ff @(posedge clock) begin
-        if(write_enable) begin
-            registers[write_select] <= write_data;
-        end
+        if(wr.enable)
+            registers[wr.select] <= wr.data;
     end
 endmodule

@@ -1,53 +1,20 @@
 import definitions::*;
 
-module alu 
-(
-    input word_t input_a,
-    input word_t input_b,
-    input opcode_t opcode,
-    output word_t result,
-    output logic equal,
-    output logic less_than,
-    output logic greater_than
-);
+module alu (alu_if.unit op);
 
     always_comb begin
-        equal = input_a == input_b;
-        less_than = input_a < input_b;
-        greater_than = input_a > input_b;
-        case (opcode)
-
-            OP_ADD, OP_ADDI: begin
-                result = input_a + input_b;
-            end
-
-            OP_SUB, OP_SUBI: begin
-                result = input_a - input_b;
-            end
-
-            OP_AND, OP_ANDI: begin
-                result = input_a & input_b;
-            end
-
-            OP_OR, OP_ORI: begin
-                result = input_a | input_b;
-            end
-
-            OP_XOR, OP_XORI: begin
-                result = input_a ^ input_b;
-            end
-
-            OP_SHL, OP_SHLI: begin
-                result = input_a << input_b;
-            end
-
-            OP_SHR, OP_SHRI: begin
-                result = input_a >> input_b;
-            end
-
-            default: begin
-                result = '0;
-            end
+        op.equal        = op.input_a == op.input_b;
+        op.less_than    = op.input_a <  op.input_b;
+        op.greater_than = op.input_a >  op.input_b;
+        case (op.opcode)
+            OP_ADD,  OP_ADDI: op.result = op.input_a + op.input_b;
+            OP_SUB,  OP_SUBI: op.result = op.input_a - op.input_b;
+            OP_AND,  OP_ANDI: op.result = op.input_a & op.input_b;
+            OP_OR,   OP_ORI:  op.result = op.input_a | op.input_b;
+            OP_XOR,  OP_XORI: op.result = op.input_a ^ op.input_b;
+            OP_SHL,  OP_SHLI: op.result = op.input_a << op.input_b;
+            OP_SHR,  OP_SHRI: op.result = op.input_a >> op.input_b;
+            default:           op.result = '0;
         endcase
     end
 

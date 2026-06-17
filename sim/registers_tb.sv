@@ -3,54 +3,45 @@
 module registers_tb;
     import definitions::*;
 
-    logic      clock;
-    reg_addr_t read_1_select;
-    word_t     read_1_data;
-    reg_addr_t read_2_select;
-    word_t     read_2_data;
-    reg_addr_t write_select;
-    word_t     write_data;
-    logic      write_enable;
+    logic clock;
+
+    reg_rd_if rd1();
+    reg_rd_if rd2();
+    reg_wr_if wr();
 
     registers dut (
-        .clock         (clock),
-        .read_1_select (read_1_select),
-        .read_1_data   (read_1_data),
-        .read_2_select (read_2_select),
-        .read_2_data   (read_2_data),
-        .write_select  (write_select),
-        .write_data    (write_data),
-        .write_enable  (write_enable)
+        .clock (clock),
+        .rd1   (rd1),
+        .rd2   (rd2),
+        .wr    (wr)
     );
 
     initial clock = 0;
     always #5 clock = ~clock;
 
-    // Drive a write for exactly one cycle (synchronous, latches on posedge).
-    task write_reg(input reg_addr_t reg_sel, input word_t data);
+    task write_reg(input reg_addr_t sel, input word_t data);
         @(posedge clock);
-        write_select <= reg_sel;
-        write_data   <= data;
-        write_enable <= 1;
+        wr.select <= sel;
+        wr.data   <= data;
+        wr.enable <= 1;
         @(posedge clock);
-        write_enable <= 0;
+        wr.enable <= 0;
     endtask
 
-    // Reads are combinational: select, settle, compare.
-    task check_read_1(input reg_addr_t reg_sel, input word_t expected, input string label);
-        read_1_select = reg_sel;
+    task check_rd1(input reg_addr_t sel, input word_t expected, input string label);
+        rd1.select = sel;
         #1;
-        if (read_1_data !== expected)
+        if (rd1.data !== expected)
             $fatal(1, "FAIL [%s]: port1 reg[%0d] expected %0h got %0h",
-                   label, reg_sel, expected, read_1_data);
+                   label, sel, expected, rd1.data);
     endtask
 
-    task check_read_2(input reg_addr_t reg_sel, input word_t expected, input string label);
-        read_2_select = reg_sel;
+    task check_rd2(input reg_addr_t sel, input word_t expected, input string label);
+        rd2.select = sel;
         #1;
-        if (read_2_data !== expected)
+        if (rd2.data !== expected)
             $fatal(1, "FAIL [%s]: port2 reg[%0d] expected %0h got %0h",
-                   label, reg_sel, expected, read_2_data);
+                   label, sel, expected, rd2.data);
     endtask
 
     integer i;
@@ -59,73 +50,60 @@ module registers_tb;
         $dumpfile("build/registers.vcd");
         $dumpvars(0, registers_tb);
 
-        write_enable  = 0;
-        write_select  = '0;
-        write_data    = '0;
-        read_1_select = '0;
-        read_2_select = '0;
+        wr.enable  = 0;
+        wr.select  = '0;
+        wr.data    = '0;
+        rd1.select = '0;
+        rd2.select = '0;
 
-        // --- power-on state: every register reads zero -------------------
         for (i = 0; i < REG_COUNT; i++)
-            check_read_1(i[3:0], 16'h0000, "init zero");
+            check_rd1(i[3:0], 32'h0000_0000, "init zero");
 
-        // --- basic write/readback ----------------------------------------
-        write_reg(4'h1, 16'hAAAA);
-        check_read_1(4'h1, 16'hAAAA, "R1 readback");
+        write_reg(4'h1, 32'hAAAA_AAAA);
+        check_rd1(4'h1, 32'hAAAA_AAAA, "R1 readback");
 
-        // highest register index still addressable
-        write_reg(4'hF, 16'h1234);
-        check_read_1(4'hF, 16'h1234, "R15 readback");
+        write_reg(4'hF, 32'h1234_5678);
+        check_rd1(4'hF, 32'h1234_5678, "R15 readback");
+        check_rd1(4'h1, 32'hAAAA_AAAA, "R1 untouched by R15 write");
 
-        // writing R1 must not disturb R15
-        check_read_1(4'h1, 16'hAAAA, "R1 untouched by R15 write");
-
-        // --- write_enable gating -----------------------------------------
-        // attempt a write with write_enable held low: must be ignored
         @(posedge clock);
-        write_select <= 4'h2;
-        write_data   <= 16'hBEEF;
-        write_enable <= 0;
+        wr.select <= 4'h2;
+        wr.data   <= 32'hBEEF_CAFE;
+        wr.enable <= 0;
         @(posedge clock);
-        check_read_1(4'h2, 16'h0000, "write_enable=0 ignored");
+        check_rd1(4'h2, 32'h0000_0000, "write_enable=0 ignored");
 
-        // now actually write R2
-        write_reg(4'h2, 16'hBEEF);
-        check_read_1(4'h2, 16'hBEEF, "R2 readback");
+        write_reg(4'h2, 32'hBEEF_CAFE);
+        check_rd1(4'h2, 32'hBEEF_CAFE, "R2 readback");
 
-        // --- two independent read ports ----------------------------------
-        read_1_select = 4'h1;
-        read_2_select = 4'h2;
+        rd1.select = 4'h1;
+        rd2.select = 4'h2;
         #1;
-        if (read_1_data !== 16'hAAAA)
-            $fatal(1, "FAIL: dual read port1 expected AAAA got %0h", read_1_data);
-        if (read_2_data !== 16'hBEEF)
-            $fatal(1, "FAIL: dual read port2 expected BEEF got %0h", read_2_data);
+        if (rd1.data !== 32'hAAAA_AAAA)
+            $fatal(1, "FAIL: dual read port1 expected AAAA_AAAA got %0h", rd1.data);
+        if (rd2.data !== 32'hBEEF_CAFE)
+            $fatal(1, "FAIL: dual read port2 expected BEEF_CAFE got %0h", rd2.data);
 
-        // both ports can address the same register at once
-        check_read_1(4'h2, 16'hBEEF, "same reg port1");
-        check_read_2(4'h2, 16'hBEEF, "same reg port2");
+        check_rd1(4'h2, 32'hBEEF_CAFE, "same reg port1");
+        check_rd2(4'h2, 32'hBEEF_CAFE, "same reg port2");
 
-        // --- overwrite ----------------------------------------------------
-        write_reg(4'h1, 16'hCCCC);
-        check_read_1(4'h1, 16'hCCCC, "R1 overwrite");
+        write_reg(4'h1, 32'hCCCC_CCCC);
+        check_rd1(4'h1, 32'hCCCC_CCCC, "R1 overwrite");
 
-        // --- synchronous timing: write is visible only after the edge -----
-        // R3 starts at zero
-        check_read_1(4'h3, 16'h0000, "R3 pre-write");
+        check_rd1(4'h3, 32'h0000_0000, "R3 pre-write");
         @(posedge clock);
-        write_select <= 4'h3;
-        write_data   <= 16'h5555;
-        write_enable <= 1;
-        read_1_select = 4'h3;
-        #1; // mid-cycle, before next posedge: old value must still be read
-        if (read_1_data !== 16'h0000)
-            $fatal(1, "FAIL [sync]: R3 updated before clock edge, got %0h", read_1_data);
-        @(posedge clock);   // latch the write
-        write_enable <= 0;
+        wr.select <= 4'h3;
+        wr.data   <= 32'h5555_5555;
+        wr.enable <= 1;
+        rd1.select = 4'h3;
         #1;
-        if (read_1_data !== 16'h5555)
-            $fatal(1, "FAIL [sync]: R3 not updated after clock edge, got %0h", read_1_data);
+        if (rd1.data !== 32'h0000_0000)
+            $fatal(1, "FAIL [sync]: R3 updated before clock edge, got %0h", rd1.data);
+        @(posedge clock);
+        wr.enable <= 0;
+        #1;
+        if (rd1.data !== 32'h5555_5555)
+            $fatal(1, "FAIL [sync]: R3 not updated after clock edge, got %0h", rd1.data);
 
         $display("registers_tb: all checks passed");
         $finish(0);

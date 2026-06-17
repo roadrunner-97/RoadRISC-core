@@ -1,3 +1,5 @@
+import definitions::*;
+
 module top (
     input  logic       clk,
     input  logic       rst,
@@ -6,8 +8,8 @@ module top (
     output logic [7:0] pmod2
 );
 
-    wire [6:0]segments;
-    wire segment_select;
+    wire [6:0] segments;
+    wire       segment_select;
     logic [31:0] display_val;
 
     hex_display disp(
@@ -28,17 +30,16 @@ module top (
     assign pmod0[6] = segment_select;
     assign pmod0[0] = segments[6];
 
-
-    addr_t vga_address;
-    word_t vga_data;
     logic [3:0] red, green, blue;
     logic hsync, vsync;
+
+    vga_bus_if vga_bus();
 
     vga_readout vga_readout(
         .clock(clk),
         .reset(rst),
-        .fb_address(vga_address),
-        .fb_data(vga_data),
+        .fb_address(vga_bus.address),
+        .fb_data(vga_bus.data),
         .r(red),
         .g(green),
         .b(blue),
@@ -50,8 +51,7 @@ module top (
         .reset(rst),
         .clock(clk),
         .output_word(display_val),
-        .vga_address(vga_address),
-        .vga_data(vga_data)
+        .vga_bus(vga_bus)
     );
 
     assign pmod1[1] = hsync;

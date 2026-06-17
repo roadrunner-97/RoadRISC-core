@@ -7,10 +7,13 @@ module core_tb;
     logic reset;
     word_t output_data;
 
+    vga_bus_if vga_bus();
+
     core dut (
-        .clock (clock),
-        .reset (reset),
-        .output_word(output_data)
+        .clock   (clock),
+        .reset   (reset),
+        .output_word(output_data),
+        .vga_bus (vga_bus)
     );
 
     initial clock = 0;

@@ -5,12 +5,9 @@ module core
     input logic reset,
     input logic clock,
     output word_t output_word,
-    //vga data just passing through
-    input addr_t vga_address,
-    output word_t vga_data
+    vga_bus_if.provider vga_bus
 );
 
-//rom controls
     addr_t pc;
     addr_t pc_next;
 
@@ -22,65 +19,35 @@ module core
     decoded_instruction_t controls;
     cpu_core_state_t core_state;
 
+    mem_bus_if intended_bus();
+    mem_bus_if actual_bus();
 
-// ram controls
+    reg_rd_if rd1();
+    reg_rd_if rd2();
+    reg_wr_if wr();
 
-    addr_t intended_ram_address;
-    word_t intended_ram_read_data;
-    word_t intended_ram_write_data;
-    logic intended_ram_wr_enable;
+    alu_if alu_bus();
 
-    addr_t actual_ram_address;
-    word_t actual_ram_read_data;
-    word_t actual_ram_write_data;
-    logic actual_ram_wr_enable;
-
-// register controls
-    reg_addr_t reg_rd1_select;
-    word_t reg_rd1_data;
-
-    reg_addr_t reg_rd2_select;
-    word_t reg_rd2_data;
-
-    reg_addr_t reg_wr_select;
-    word_t reg_wr_data;
-    logic reg_wr_enable;
-
-// alu wires
-    word_t alu_input_a;
-    word_t alu_input_b;
-    word_t alu_result;
-    logic alu_equal;
-    logic alu_less_than;
-    logic alu_greater_than;
-    opcode_t curr_opcode;
-
-    logic version_requested;
-    word_t version_data;
+    peripheral_if version_slot();
+    peripheral_if uart_flag_slot();
+    peripheral_if uart_rx_slot();
 
     version version
     (
         .clock(clock),
-        .version_requested(version_requested),
-        .version_data(version_data)
+        .slot(version_slot)
     );
 
-//i'm going to need to merge related signals into busses
     memory_watchman watchman
     (
         .clock(clock),
         .reset(reset),
         .core_state(core_state),
-        .core_address(intended_ram_address),
-        .core_write_data(intended_ram_write_data),
-        .core_read_data(intended_ram_read_data),
-        .core_write_enable(intended_ram_wr_enable),
-        .mmap_address(actual_ram_address),
-        .mmap_write_data(actual_ram_write_data),
-        .mmap_read_data(actual_ram_read_data),
-        .mmap_write_enable(actual_ram_wr_enable),
-        .version_command_requested(version_requested),
-        .version_command_response(version_data)
+        .core_bus(intended_bus),
+        .mmap_bus(actual_bus),
+        .version_slot(version_slot),
+        .uart_flag_slot(uart_flag_slot),
+        .uart_rx_slot(uart_rx_slot)
     );
 
     mmap #(
@@ -88,12 +55,8 @@ module core
         .FILE("src/program.hex")
     ) mmap(
         .clock(clock),
-        .memory_address(actual_ram_address),
-        .memory_read_data(actual_ram_read_data),
-        .memory_write_data(actual_ram_write_data),
-        .write_enable(actual_ram_wr_enable),
-        .vga_address(vga_address),
-        .vga_data(vga_data)
+        .bus(actual_bus),
+        .vga_bus(vga_bus)
     );
 
     instruction_decoder idc(
@@ -103,27 +66,13 @@ module core
 
     registers registers(
         .clock(clock),
-        .read_1_select(reg_rd1_select),
-        .read_1_data(reg_rd1_data),
-        .read_2_select(reg_rd2_select),
-        .read_2_data(reg_rd2_data),
-        .write_select(reg_wr_select),
-        .write_data(reg_wr_data),
-        .write_enable(reg_wr_enable),
+        .rd1(rd1),
+        .rd2(rd2),
+        .wr(wr),
         .debug(output_word)
     );
 
-    alu alu(
-        .input_a(alu_input_a),
-        .input_b(alu_input_b),
-        .opcode(controls.opcode),
-        .result(alu_result),
-        .equal(alu_equal),
-        .less_than(alu_less_than),
-        .greater_than(alu_greater_than)
-    );
-
-    assign curr_opcode = controls.opcode;
+    alu alu(.op(alu_bus));
 
 
     always_ff @(posedge clock) begin
@@ -134,7 +83,7 @@ module core
         end else begin
             case(core_state)
                 FETCH: begin
-                    core_state <= EXECUTE; // this cycle we just loaded the instruction from memory
+                    core_state <= EXECUTE;
                 end
 
                 EXECUTE: begin
@@ -160,7 +109,7 @@ module core
     // stay stable through TRANSFER (where stores still need them)
     always_ff @(posedge clock) begin
         if(core_state == EXECUTE) begin
-            instruction_reg <= intended_ram_read_data;
+            instruction_reg <= intended_bus.read_data;
         end
     end
 
@@ -169,136 +118,114 @@ module core
         pc_next = pc + 1;
         sp_next = sp;
 
-        reg_wr_enable = '0;
-        reg_wr_select = controls.reg_destination;
-        reg_wr_data = '0;
+        wr.enable = '0;
+        wr.select = controls.reg_destination;
+        wr.data   = '0;
 
-        reg_rd1_select = controls.reg_a;
-        reg_rd2_select = controls.reg_b;
+        rd1.select = controls.reg_a;
+        rd2.select = controls.reg_b;
 
-        intended_ram_address = '0;
-        intended_ram_wr_enable = '0;
-        intended_ram_write_data = '0;
+        intended_bus.address      = '0;
+        intended_bus.write_data   = '0;
+        intended_bus.write_enable = '0;
 
-        alu_input_a = reg_rd1_data;
+        alu_bus.input_a = rd1.data;
+        alu_bus.input_b = controls.use_immediate ? controls.immediate : rd2.data;
+        alu_bus.opcode  = controls.opcode;
 
         case(core_state)
             FETCH: begin
-                intended_ram_address = pc; //fetching the instruction means we're pointing at the PC
+                intended_bus.address = pc; // fetching the instruction means we're pointing at the PC
             end
 
             EXECUTE: begin
-                //now the instruction has been fetched we can decode this instruction from RAM
-                current_instruction = intended_ram_read_data;
+                // now the instruction has been fetched we can decode this instruction from RAM
+                current_instruction = intended_bus.read_data;
 
-                //only writeback to registers during the execute cycle
-                //(so we don't do it again in the transfer cycle)
+                // only writeback to registers during the execute cycle
+                // (so we don't do it again in the transfer cycle)
                 if(controls.reg_writeback) begin
-                    reg_wr_enable = '1;
-                    reg_wr_data = alu_result;
+                    wr.enable = '1;
+                    wr.data   = alu_bus.result;
                 end
             end
 
             TRANSFER: begin
-                if(controls.opcode == OP_LD) begin
-                    reg_wr_enable = '1;
-                end
-                if(controls.opcode == OP_POP) begin
-                    reg_wr_enable = '1;
-                end
+                if(controls.opcode == OP_LD)  wr.enable = '1;
+                if(controls.opcode == OP_POP) wr.enable = '1;
 
                 if(controls.opcode == OP_ST) begin
-                    intended_ram_address = reg_rd2_data + controls.immediate;
-                    intended_ram_wr_enable = '1;
-                    intended_ram_write_data = reg_rd1_data;
+                    intended_bus.address      = rd2.data + controls.immediate;
+                    intended_bus.write_enable = '1;
+                    intended_bus.write_data   = rd1.data;
                 end
 
                 if(controls.opcode == OP_PUSH) begin
-                    intended_ram_address = sp - 1;
-                    intended_ram_wr_enable = '1;
-                    intended_ram_write_data = reg_rd1_data;
+                    intended_bus.address      = sp - 1;
+                    intended_bus.write_enable = '1;
+                    intended_bus.write_data   = rd1.data;
                 end
 
                 if(controls.opcode == OP_CALL) begin
-                    intended_ram_address = sp - 1;
-                    intended_ram_wr_enable = '1;
-                    intended_ram_write_data = pc + 1;
+                    intended_bus.address      = sp - 1;
+                    intended_bus.write_enable = '1;
+                    intended_bus.write_data   = pc + 1;
                 end
 
                 if(controls.opcode == OP_RET) begin
-                    intended_ram_address = sp;
-                    pc_next = intended_ram_read_data;
-                    sp_next = sp + 1;
+                    intended_bus.address = sp;
+                    pc_next              = intended_bus.read_data;
+                    sp_next              = sp + 1;
                 end
             end
         endcase
 
-        alu_input_b = controls.use_immediate ? controls.immediate : reg_rd2_data;
-
-        //jumping commands
+        // jumping commands
         if(controls.jump) begin
             case(controls.opcode)
-                OP_JMP: begin
-                    pc_next = controls.immediate;
-                end
+                OP_JMP:  pc_next = controls.immediate;
                 OP_JAL: begin
                     pc_next = controls.immediate;
-                    reg_wr_data = pc + 1;
+                    wr.data = pc + 1;
                 end
-                OP_JREL: begin
-                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
-                end
-                OP_CALL: begin
-                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
-                end
+                OP_JREL: pc_next = pc + 32'($signed(controls.immediate[15:0]));
+                OP_CALL: pc_next = pc + 32'($signed(controls.immediate[15:0]));
             endcase
         end
 
-        //branching commands
+        // branching commands
         if(controls.branch) begin
-            if((controls.opcode == OP_BEQ && alu_equal) || 
-               (controls.opcode == OP_BLT && alu_less_than ||
-                controls.opcode == OP_BNEQ && ~alu_equal ||
-                controls.opcode == OP_BGT && alu_greater_than)) begin
-                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
+            if((controls.opcode == OP_BEQ  && alu_bus.equal)        ||
+               (controls.opcode == OP_BLT  && alu_bus.less_than)    ||
+               (controls.opcode == OP_BNEQ && ~alu_bus.equal)       ||
+               (controls.opcode == OP_BGT  && alu_bus.greater_than)) begin
+                pc_next = pc + 32'($signed(controls.immediate[15:0]));
             end
         end
 
-        if(controls.mem_read && core_state != FETCH ) begin //we can't be doing memory access during PC fetch state
-            reg_wr_data = intended_ram_read_data;
+        if(controls.mem_read && core_state != FETCH) begin
+            wr.data = intended_bus.read_data;
             if(controls.opcode == OP_LD) begin
-                intended_ram_address = addr_t'(reg_rd1_data + controls.immediate);
+                intended_bus.address = addr_t'(rd1.data + controls.immediate);
             end else if (controls.opcode == OP_POP) begin
-                intended_ram_address = sp;
-                sp_next = sp + 1;
+                intended_bus.address = sp;
+                sp_next              = sp + 1;
             end else if (controls.opcode == OP_RET) begin
-                intended_ram_address = sp;
+                intended_bus.address = sp;
             end
         end
 
-        if (controls.mem_write && core_state != FETCH) begin
-            if(controls.opcode == OP_PUSH || 
+        if(controls.mem_write && core_state != FETCH) begin
+            if(controls.opcode == OP_PUSH ||
                controls.opcode == OP_CALL) begin
                 sp_next = sp - 1;
             end
         end
 
-        if(controls.opcode == OP_LDI) begin
-            reg_wr_data = controls.immediate;
-        end
-
-        if(controls.opcode == OP_STS) begin
-            sp_next = reg_rd1_data;
-        end
-
-        if(controls.opcode == OP_LDS) begin
-            reg_wr_data = sp;
-        end
-
-        if(controls.halt) begin
-            pc_next = pc;
-        end
+        if(controls.opcode == OP_LDI) wr.data = controls.immediate;
+        if(controls.opcode == OP_STS) sp_next  = rd1.data;
+        if(controls.opcode == OP_LDS) wr.data  = sp;
+        if(controls.halt)             pc_next  = pc;
     end
-
 
 endmodule
