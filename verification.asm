@@ -303,7 +303,30 @@ test_34:
     bneq r1, r2, fail
 
     mov r15, 0x0023
-    halt
+
+; after all tests pass: poll UART RX and print each received value as 8 hex digits
+uart_demo:
+    mov r0, 0x1A00
+    mov sp, r0
+    mov r12, 0x1A80          ; current screen line (top of framebuffer)
+
+uart_demo_poll:
+    xor r6, r6, r6           ; r6 = 0 (re-zero each iteration; draw_glyph clobbers it)
+    mov r0, 0xFFF0
+    mov r1, [r0]             ; r1 = UART flag (non-zero means byte ready)
+    beq r1, r6, uart_demo_poll
+
+    mov r0, 0xFFF1
+    mov r4, [r0]             ; r4 = received value
+
+    mov r5, r12
+    call print_hex_word
+
+    add r12, r12, 40         ; advance to next screen line
+    mov r0, 0x1EF0           ; ~30 text rows from 0x1A80
+    blt r0, r12, uart_demo_poll  ; if r12 < 0x1EF0, keep going
+    mov r12, 0x1A80          ; wrap back to top of screen
+    jmp uart_demo_poll
 
 done:
     halt
@@ -387,6 +410,39 @@ draw_glyph_dump_next:
     add r5, r5, 320
     jmp draw_glyph_dump_next
 draw_glyph_dump_done:
+    ret
+
+
+; print_hex_word: render a 32-bit value as 8 hex digits to the framebuffer
+; r4 = 32-bit value to display
+; r5 = framebuffer word address of top-left of first character
+; clobbers r0, r1, r3, r5, r6, r7, r9, r10, r11
+print_hex_word:
+    mov r10, r4              ; r10 = working copy (rotated left 4 each iteration)
+    mov r11, 8               ; r11 = nibble counter
+    mov r7, ascii_glyphs
+    xor r6, r6, r6
+print_hex_word_loop:
+    beq r11, r6, print_hex_word_done
+    shr r0, r10, 28          ; extract top nibble (bits 31:28)
+    and r0, r0, 0xF
+    mov r3, 10
+    blt r3, r0, print_hex_word_digit  ; branch if r0 < 10 -> '0'-'9'
+    add r0, r0, 0x37         ; 'A' - 10 = 0x37; 10->A, 11->B, ...
+    jmp print_hex_word_char
+print_hex_word_digit:
+    add r0, r0, 0x30         ; '0' + nibble
+print_hex_word_char:
+    sub r0, r0, 0x20         ; offset from glyph_20 (space is first glyph)
+    shl r0, r0, 3            ; * 8 words per glyph
+    add r0, r0, r7           ; r0 = glyph ptr
+    mov r1, r5               ; r1 = screen address
+    call draw_glyph
+    add r5, r5, 1            ; advance screen cursor by one character
+    shl r10, r10, 4          ; shift next nibble into top position
+    sub r11, r11, 1
+    jmp print_hex_word_loop
+print_hex_word_done:
     ret
 
 

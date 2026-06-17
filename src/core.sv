@@ -5,7 +5,10 @@ module core
     input logic reset,
     input logic clock,
     output word_t output_word,
-    vga_bus_if.provider vga_bus
+    vga_bus_if.provider vga_bus,
+
+    input logic uart_rx,
+    output logic uart_tx
 );
 
     addr_t pc;
@@ -36,6 +39,15 @@ module core
     (
         .clock(clock),
         .slot(version_slot)
+    );
+
+    uart uart(
+        .clock(clock),
+        .reset(reset),
+        .rx_pin(uart_rx),
+        .tx_pin(uart_tx),
+        .rx_word(uart_rx_slot),
+        .flags(uart_flag_slot)
     );
 
     memory_watchman watchman

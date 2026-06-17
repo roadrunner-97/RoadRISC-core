@@ -20,9 +20,10 @@ packages:
   definitions: packages/definitions.sv
 
 modules:
-  alu:                  { deps: [definitions] }
-  registers:            { deps: [definitions] }
-  mmap:                 { deps: [definitions], data: [src/program.hex, sim/mmap.hex]}
+  mem_bus_if:           { src: src/mem_bus_if.sv, deps: [definitions] }
+  alu:                  { deps: [definitions, mem_bus_if] }
+  registers:            { deps: [definitions, mem_bus_if] }
+  mmap:                 { deps: [definitions, mem_bus_if], data: [src/program.hex, sim/mmap.hex]}
   instruction_decoder:  { deps: [definitions]}
   clock_divider:        {}
   pulse_generator:      {}
@@ -30,4 +31,7 @@ modules:
   clock_synchroniser:   {}
   hex_display:          { deps: [clock_divider] } # instantiates clock_divider
   # top:                  { src: src/main.v }       # non-default extension; no testbench
-  core:                 { deps: [definitions, alu, registers, mmap, instruction_decoder],  data: [src/program.hex]}
+  core:                 { deps: [definitions, mem_bus_if, alu, registers, mmap, instruction_decoder, version, memory_watchman],  data: [src/program.hex]}
+  vga_timer:            { src: src/hardware/vga_timer.sv }
+  memory_watchman:      { deps: [definitions, mem_bus_if]}
+  version:              { deps: [definitions, mem_bus_if]}

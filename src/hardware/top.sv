@@ -5,7 +5,9 @@ module top (
     input  logic       rst,
     output logic [7:0] pmod0,
     output logic [7:0] pmod1,
-    output logic [7:0] pmod2
+    output logic [7:0] pmod2,
+    input logic uart_rx,
+    output logic uart_tx
 );
 
     wire [6:0] segments;
@@ -51,7 +53,9 @@ module top (
         .reset(rst),
         .clock(clk),
         .output_word(display_val),
-        .vga_bus(vga_bus)
+        .vga_bus(vga_bus),
+        .uart_rx(uart_rx),
+        .uart_tx(uart_tx)
     );
 
     assign pmod1[1] = hsync;
