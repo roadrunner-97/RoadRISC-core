@@ -9,13 +9,11 @@ module memory_watchman
     mem_bus_if.slave  core_bus,
     mem_bus_if.master mmap_bus,
 
-    mmio_reader.originator version_slot,
-    mmio_reader.originator uart_flag_slot,
-    mmio_reader.originator uart_rx_slot,
+    mmio_transaction.originator version_slot,
+    mmio_transaction.originator uart_flag_slot,
+    mmio_transaction.originator uart_rx_slot,
 
-    mmio_reader.originator direct_timer_read,
-    mmio_writer.originator direct_timer_write
-
+    mmio_transaction.originator direct_timer
 );
 
     assign mmap_bus.address      = core_bus.address;
@@ -31,32 +29,37 @@ module memory_watchman
     end
 
     always_comb begin
-        version_slot.requested   = 0;
-        uart_flag_slot.requested = 0;
-        uart_rx_slot.requested   = 0;
+        version_slot.read_request   = 0;
+        version_slot.write_request   = 0;
 
-        direct_timer_read.requested = 0;
-        direct_timer_write.write_requested = 0;
+        uart_flag_slot.read_request = 0;
+        uart_flag_slot.write_request = 0;
 
-        core_bus.read_data       = mmap_bus.read_data; // default — pass through from mmap
+        uart_rx_slot.read_request   = 0;
+        uart_rx_slot.write_request   = 0;
+
+        direct_timer.read_request = 0;
+        direct_timer.write_request = 0;
+
+        core_bus.read_data = mmap_bus.read_data; // default — pass through from mmap
         if (core_state == TRANSFER) begin
             if (!core_bus.write_enable) begin
                 case (latched_address)
                     VERSION_REQUEST_ADDR: begin
-                        version_slot.requested = 1;
-                        core_bus.read_data     = version_slot.response;
+                        version_slot.read_request = 1;
+                        core_bus.read_data = version_slot.read_response;
                     end
                     UART_FLAG_REQUEST_ADDR: begin
-                        uart_flag_slot.requested = 1;
-                        core_bus.read_data       = uart_flag_slot.response;
+                        uart_flag_slot.read_request = 1;
+                        core_bus.read_data = uart_flag_slot.read_response;
                     end
                     UART_RX_REQUEST_ADDR: begin
-                        uart_rx_slot.requested = 1;
-                        core_bus.read_data     = uart_rx_slot.response;
+                        uart_rx_slot.read_request = 1;
+                        core_bus.read_data = uart_rx_slot.read_response;
                     end
                     TIMER_ADDR: begin
-                        direct_timer_read.requested = 1;
-                        core_bus.read_data = direct_timer_read.response;
+                        direct_timer.read_request = 1;
+                        core_bus.read_data = direct_timer.read_response;
                     end
                 endcase
 
@@ -65,8 +68,8 @@ module memory_watchman
                 //in this caser we know we're in transfer and write enable is high
                 case(core_bus.address)
                     TIMER_ADDR: begin
-                        direct_timer_write.write_requested = 1;
-                        direct_timer_write.payload = core_bus.write_data;
+                        direct_timer.write_request = 1;
+                        direct_timer.write_payload = core_bus.write_data;
                     end
                 endcase
             end

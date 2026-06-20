@@ -11,23 +11,14 @@ interface mem_bus_if;
     modport slave  (input  address, write_data, write_enable, output read_data);
 endinterface
 
-//used for mmio read operations
-interface mmio_reader;
-    logic  requested;
-    word_t response;
+interface mmio_transaction;
+    logic read_request; //useful for ops that pop
+    word_t read_response;
+    logic write_request;
+    word_t write_payload;
 
-    modport originator (output requested, input  response);
-    modport handler (input  requested, output response);
-endinterface
-
-
-//used for mmio write operations
-interface mmio_writer;
-    logic write_requested;
-    word_t payload;
-
-    modport originator(output write_requested, output payload);
-    modport handler(input write_requested, input payload);
+    modport originator (output read_request, input read_response, output write_request, output write_payload);
+    modport handler(input read_request, output read_response, input write_request, input write_payload);
 endinterface
 
 // VGA framebuffer read port

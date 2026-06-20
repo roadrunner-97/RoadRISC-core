@@ -13,9 +13,9 @@ module memory_watchman_tb;
 
     mem_bus_if    core_bus();
     mem_bus_if    mmap_bus();
-    mmio_reader version_slot();
-    mmio_reader uart_flag_slot();
-    mmio_reader uart_rx_slot();
+    mmio_transaction version_slot();
+    mmio_transaction uart_flag_slot();
+    mmio_transaction uart_rx_slot();
 
     memory_watchman dut (
         .clock          (clock),
@@ -35,9 +35,9 @@ module memory_watchman_tb;
         core_bus.write_data    = '0;
         core_bus.write_enable  = 0;
         mmap_bus.read_data     = '0;
-        version_slot.response  = '0;
-        uart_flag_slot.response = '0;
-        uart_rx_slot.response  = '0;
+        version_slot.read_response  = '0;
+        uart_flag_slot.read_response = '0;
+        uart_rx_slot.read_response  = '0;
         @(posedge clock); #1;
         reset = 0;
     endtask

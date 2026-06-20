@@ -2,9 +2,9 @@ import definitions::*;
 
 module version(
     input clock,
-    mmio_reader.handler slot
+    mmio_transaction.handler slot
 );
 
-assign slot.response = 32'h00010001;
+assign slot.read_response = 32'h00010001;
 
 endmodule

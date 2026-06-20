@@ -31,9 +31,10 @@ module core
 
     alu_if alu_bus();
 
-    mmio_reader version_slot();
-    mmio_reader uart_flag_slot();
-    mmio_reader uart_rx_slot();
+    mmio_transaction version_slot();
+    mmio_transaction uart_flag_slot();
+    mmio_transaction uart_rx_slot();
+    mmio_transaction direct_timer_slot();
 
     version version
     (
@@ -59,7 +60,8 @@ module core
         .mmap_bus(actual_bus),
         .version_slot(version_slot),
         .uart_flag_slot(uart_flag_slot),
-        .uart_rx_slot(uart_rx_slot)
+        .uart_rx_slot(uart_rx_slot),
+        .direct_timer(direct_timer_slot)
     );
 
     mmap #(

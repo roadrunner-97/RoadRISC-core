@@ -4,23 +4,22 @@ module prog_timer
 (
     input logic clock,
     input logic reset,
-    mmio_writer.handler direct_timer_write,
-    mmio_reader.handler direct_timer_read
+    mmio_transaction.handler direct_timer
 );
 
-word_t direct_timer;
+word_t direct_timer_value;
 
 always_ff @(posedge clock) begin
     if(reset) begin
-        direct_timer <= 0;
+        direct_timer_value <= 0;
     end else begin
-        if(direct_timer_write.write_requested) begin
-            direct_timer <= direct_timer_write.payload;
+        if(direct_timer.write_request) begin
+            direct_timer_value <= direct_timer.write_payload;
         end else begin
-            if(direct_timer == 0) begin
+            if(direct_timer_value == 0) begin
                 //handle interrupt here
             end else begin
-                direct_timer <= direct_timer - 1;
+                direct_timer_value <= direct_timer_value - 1;
             end
         end
     end
@@ -28,5 +27,5 @@ end
 
 //no statefulness needed we can always provide the time
 
-assign direct_timer_read.response = direct_timer;
+assign direct_timer.read_response = direct_timer_value;
 endmodule

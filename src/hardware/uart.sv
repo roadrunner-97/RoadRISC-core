@@ -29,8 +29,8 @@ module uart(
     input logic rx_pin,
     output logic tx_pin,
 
-    mmio_reader.handler rx_word,
-    mmio_reader.handler flags
+    mmio_transaction.handler rx_word,
+    mmio_transaction.handler flags
 );
 
 assign tx_pin = 'b1;
@@ -107,12 +107,12 @@ always_ff @(posedge clock) begin
         endcase
     end
 
-    if(rx_word.requested && buffer_state == FULL)
+    if(rx_word.read_request && buffer_state == FULL)
         buffer_state <= EMPTY;
 end
 
-assign flags.response   = {31'b0, (buffer_state == FULL)};
-assign rx_word.response = rx_buffer;
+assign flags.read_response   = {31'b0, (buffer_state == FULL)};
+assign rx_word.read_response = rx_buffer;
 
 
 endmodule
