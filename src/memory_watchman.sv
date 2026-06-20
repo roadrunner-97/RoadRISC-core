@@ -18,28 +18,35 @@ module memory_watchman
     assign mmap_bus.write_data   = core_bus.write_data;
     assign mmap_bus.write_enable = core_bus.write_enable;
 
+    // Latch the address at end of EXECUTE so the TRANSFER peripheral compare
+    // starts from a FF rather than the full recomputed address chain.
+    // Mirrors what the MMAP BSRAM already does internally with its registered read.
+    addr_t latched_address;
+    always_ff @(posedge clock) begin
+        if (core_state == EXECUTE) latched_address <= core_bus.address;
+    end
+
     always_comb begin
         version_slot.requested   = 0;
         uart_flag_slot.requested = 0;
         uart_rx_slot.requested   = 0;
         core_bus.read_data       = mmap_bus.read_data; // default — pass through from mmap
 
-        if (!core_bus.write_enable) begin
-            if (core_state == EXECUTE) begin
-                case (core_bus.address)
-                    VERSION_REQUEST_ADDR:   version_slot.requested   = 1;
-                    UART_FLAG_REQUEST_ADDR: uart_flag_slot.requested = 1;
-                    UART_RX_REQUEST_ADDR:   uart_rx_slot.requested   = 1;
-                endcase
-            end
-
-            if (core_state == TRANSFER) begin
-                case (core_bus.address)
-                    VERSION_REQUEST_ADDR:   core_bus.read_data = version_slot.response;
-                    UART_FLAG_REQUEST_ADDR: core_bus.read_data = uart_flag_slot.response;
-                    UART_RX_REQUEST_ADDR:   core_bus.read_data = uart_rx_slot.response;
-                endcase
-            end
+        if (!core_bus.write_enable && core_state == TRANSFER) begin
+            case (latched_address)
+                VERSION_REQUEST_ADDR: begin
+                    version_slot.requested = 1;
+                    core_bus.read_data     = version_slot.response;
+                end
+                UART_FLAG_REQUEST_ADDR: begin
+                    uart_flag_slot.requested = 1;
+                    core_bus.read_data       = uart_flag_slot.response;
+                end
+                UART_RX_REQUEST_ADDR: begin
+                    uart_rx_slot.requested = 1;
+                    core_bus.read_data     = uart_rx_slot.response;
+                end
+            endcase
         end
     end
 endmodule

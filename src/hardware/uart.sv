@@ -107,21 +107,12 @@ always_ff @(posedge clock) begin
         endcase
     end
 
-    if(flags.requested) begin
-        if(buffer_state == FULL) begin
-            flags.response <= 'b1;
-        end else begin
-            flags.response <= 'b0;
-        end
-    end
-
-    if(rx_word.requested) begin
-        if(buffer_state == FULL) begin
-            rx_word.response <= rx_buffer;
-            buffer_state <= EMPTY;
-        end
-    end
+    if(rx_word.requested && buffer_state == FULL)
+        buffer_state <= EMPTY;
 end
+
+assign flags.response   = {31'b0, (buffer_state == FULL)};
+assign rx_word.response = rx_buffer;
 
 
 endmodule

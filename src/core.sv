@@ -215,8 +215,7 @@ module core
             end
         end
 
-        if(controls.mem_read && core_state != FETCH) begin
-            wr.data = intended_bus.read_data;
+        if(controls.mem_read && core_state == EXECUTE) begin
             if(controls.opcode == OP_LD) begin
                 intended_bus.address = addr_t'(rd1.data + controls.immediate);
             end else if (controls.opcode == OP_POP) begin
@@ -225,6 +224,10 @@ module core
             end else if (controls.opcode == OP_RET) begin
                 intended_bus.address = sp;
             end
+        end
+
+        if(controls.mem_read && core_state == TRANSFER) begin
+            wr.data = intended_bus.read_data;
         end
 
         if(controls.mem_write && core_state != FETCH) begin
