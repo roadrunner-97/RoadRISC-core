@@ -91,7 +91,7 @@ always_ff @(posedge clock) begin
 
         STOP_BIT: begin
             if(sample_timer == 2604) begin
-                rx_buffer <= {byte_data, rx_buffer[31:8]};
+                rx_buffer <= {rx_buffer[23:0], byte_data};
                 case(buffer_state)
                     EMPTY:       buffer_state <= ONE_BYTE;
                     ONE_BYTE:    buffer_state <= TWO_BYTES;
