@@ -29,8 +29,8 @@ module uart(
     input logic rx_pin,
     output logic tx_pin,
 
-    peripheral_if.peripheral rx_word,
-    peripheral_if.peripheral flags
+    mmio_reader.handler rx_word,
+    mmio_reader.handler flags
 );
 
 assign tx_pin = 'b1;

@@ -93,4 +93,6 @@ package definitions;
     localparam int UART_FLAG_REQUEST_ADDR = 16'hFFF0;
     localparam int UART_RX_REQUEST_ADDR = 16'hFFF1;
 
+    localparam int TIMER_ADDR = 16'hFF00;
+
 endpackage

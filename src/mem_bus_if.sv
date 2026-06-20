@@ -11,14 +11,23 @@ interface mem_bus_if;
     modport slave  (input  address, write_data, write_enable, output read_data);
 endinterface
 
-// Peripheral slot — watchman fires .requested in EXECUTE;
-// peripheral latches its response; watchman reads .response in TRANSFER.
-interface peripheral_if;
+//used for mmio read operations
+interface mmio_reader;
     logic  requested;
     word_t response;
 
-    modport watchman   (output requested, input  response);
-    modport peripheral (input  requested, output response);
+    modport originator (output requested, input  response);
+    modport handler (input  requested, output response);
+endinterface
+
+
+//used for mmio write operations
+interface mmio_writer;
+    logic write_requested;
+    word_t payload;
+
+    modport originator(output write_requested, output payload);
+    modport handler(input write_requested, input payload);
 endinterface
 
 // VGA framebuffer read port

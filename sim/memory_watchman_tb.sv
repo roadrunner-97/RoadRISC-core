@@ -13,9 +13,9 @@ module memory_watchman_tb;
 
     mem_bus_if    core_bus();
     mem_bus_if    mmap_bus();
-    peripheral_if version_slot();
-    peripheral_if uart_flag_slot();
-    peripheral_if uart_rx_slot();
+    mmio_reader version_slot();
+    mmio_reader uart_flag_slot();
+    mmio_reader uart_rx_slot();
 
     memory_watchman dut (
         .clock          (clock),

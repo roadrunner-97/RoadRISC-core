@@ -31,9 +31,9 @@ module core
 
     alu_if alu_bus();
 
-    peripheral_if version_slot();
-    peripheral_if uart_flag_slot();
-    peripheral_if uart_rx_slot();
+    mmio_reader version_slot();
+    mmio_reader uart_flag_slot();
+    mmio_reader uart_rx_slot();
 
     version version
     (
