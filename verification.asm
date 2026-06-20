@@ -295,14 +295,40 @@ test_33:
     mov r5, r12
     call draw_glyph_dump
 
-test_34:
+test_34: ; test version flag
     mov r15, 0x0022
     mov r1, 0xF00F
     mov r0, 0xFFFF
     mov r2, [r0]
     bneq r1, r2, fail
 
-    mov r15, 0x0023
+test_35: ; test mull and mulh: 0x76543210 * 0xFEDCBA98 = 0x75CD9046_541D5980
+    mov r15, 0x0023        ; mull: lower 32 bits
+
+    mov r0, 0x7654
+    shl r0, 16
+    or r0, 0x3210          ; r0 = 0x76543210
+
+    mov r1, 0xFEDC
+    shl r1, 16
+    or r1, 0xBA98          ; r1 = 0xFEDCBA98
+
+    mull r2, r0, r1
+
+    mov r4, 0x541D
+    shl r4, 16
+    or r4, 0x5980          ; r4 = 0x541D5980 (expected)
+    bneq r2, r4, fail
+
+    mov r15, 0x0024        ; mulu: upper 32 bits
+    mulu r3, r0, r1
+
+    mov r5, 0x75CD
+    shl r5, 16
+    or r5, 0x9046          ; r5 = 0x75CD9046 (expected)
+    bneq r3, r5, fail
+
+    mov r15, 0x0025
 
 ; after all tests pass: poll UART RX and print each received value as 8 hex digits
 uart_demo:

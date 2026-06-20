@@ -33,6 +33,9 @@ package definitions;
         OP_POP  = 8'h1D,
         OP_CALL = 8'h1E,
         OP_RET  = 8'h1F,
+        OP_MUL  = 8'h42,
+        OP_MULU = 8'h43,
+        OP_MULL = 8'h44,
         OP_HALT  = 8'hFF
     } opcode_t;
 

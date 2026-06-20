@@ -2,6 +2,14 @@ import definitions::*;
 
 module alu (alu_if.unit op);
 
+    logic [(2 * RAM_WIDTH) - 1:0] product;
+
+	Integer_Multiplier_Top your_instance_name(
+		.mul_a(op.input_a), //input [31:0] mul_a
+		.mul_b(op.input_b), //input [31:0] mul_b
+		.product(product) //output [63:0] product
+	);
+
     always_comb begin
         op.equal        = op.input_a == op.input_b;
         op.less_than    = op.input_a <  op.input_b;
@@ -14,6 +22,8 @@ module alu (alu_if.unit op);
             OP_XOR,  OP_XORI: op.result = op.input_a ^ op.input_b;
             OP_SHL,  OP_SHLI: op.result = op.input_a << op.input_b;
             OP_SHR,  OP_SHRI: op.result = op.input_a >> op.input_b;
+            OP_MULL: op.result = product[31:0];
+            OP_MULU: op.result = product[63:32];
             default:           op.result = '0;
         endcase
     end

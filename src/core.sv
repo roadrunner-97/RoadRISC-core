@@ -169,7 +169,10 @@ module core
 
             TRANSFER: begin
                 if(controls.opcode == OP_LD)  wr.enable = '1;
-                if(controls.opcode == OP_POP) wr.enable = '1;
+                if(controls.opcode == OP_POP) begin
+                    wr.enable = '1;
+                    sp_next   = sp + 1;
+                end
 
                 if(controls.opcode == OP_ST) begin
                     intended_bus.address      = rd2.data + controls.immediate;

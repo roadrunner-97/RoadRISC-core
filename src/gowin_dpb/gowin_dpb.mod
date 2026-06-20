@@ -7,13 +7,13 @@
 
 -mod_name Gowin_DPB
 -file_name gowin_dpb
--path /home/raffi/fpga/helloworld/src/gowin_dpb/
+-path /home/raffi/fpga/roadrisc-core/src/gowin_dpb/
 -type RAM_DP
 -file_type vlg
 -bram_b true
 -dev_type GW5A-25A
--depth_0 16184
--depth_1 16184
+-depth_0 16384
+-depth_1 16384
 -width_0 32
 -width_1 32
 -read_mode_0 bypass
@@ -22,5 +22,5 @@
 -write_mode_1 normal
 -speed false
 -reset_mode sync
--init_file /home/raffi/fpga/helloworld/src/hardware/program.mi
+-init_file /home/raffi/fpga/roadrisc-core/program.mi
 -init_match port_A
