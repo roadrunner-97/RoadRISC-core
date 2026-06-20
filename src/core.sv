@@ -95,6 +95,10 @@ module core
         end else begin
             case(core_state)
                 FETCH: begin
+                    core_state <= DECODE;
+                end
+
+                DECODE: begin
                     core_state <= EXECUTE;
                 end
 
@@ -117,12 +121,12 @@ module core
         end
     end
 
-    // capture the fetched instruction during EXECUTE so the decoded controls
-    // stay stable through TRANSFER (where stores still need them)
     always_ff @(posedge clock) begin
-        if(core_state == EXECUTE) begin
-            instruction_reg <= intended_bus.read_data;
-        end
+        if(core_state == DECODE)
+            /* we're not using the intended_bus here which kinda breaks the mental model of the 
+            memory watchman as a gobetween for the memory and the core, but it breaks a big combinatorial loop that
+            reduces max frequency on hardware, and since instructions can't come directly from peripherals this is ok */
+            instruction_reg <= actual_bus.read_data;
     end
 
     always_comb begin
@@ -150,10 +154,11 @@ module core
                 intended_bus.address = pc; // fetching the instruction means we're pointing at the PC
             end
 
-            EXECUTE: begin
-                // now the instruction has been fetched we can decode this instruction from RAM
-                current_instruction = intended_bus.read_data;
+            DECODE: begin
+                // instruction_reg is being captured this cycle, nothing done here
+            end
 
+            EXECUTE: begin
                 // only writeback to registers during the execute cycle
                 // (so we don't do it again in the transfer cycle)
                 if(controls.reg_writeback) begin

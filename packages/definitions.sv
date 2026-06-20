@@ -38,7 +38,8 @@ package definitions;
 
     typedef enum logic[1:0]{
         FETCH, /*fetch the instruction pointed to by the PC */
-        EXECUTE,/*decode the current instruction now fetched */
+        DECODE, /*latch the instruction and turn it into control signals */
+        EXECUTE,/*do register and ALU based operations */
         TRANSFER /*some operations require an extra cycle to interact with memory once decoded */
     } cpu_core_state_t;
 
