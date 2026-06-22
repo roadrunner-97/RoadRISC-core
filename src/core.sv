@@ -148,7 +148,7 @@ module core
         intended_bus.write_enable = '0;
 
         alu_bus.input_a = rd1.data;
-        alu_bus.input_b = controls.use_immediate ? controls.immediate : rd2.data;
+        alu_bus.input_b = controls.use_immediate ? 32'(controls.immediate[15:0]) : rd2.data;
         alu_bus.opcode  = controls.opcode;
 
         case(core_state)
@@ -170,44 +170,43 @@ module core
             end
 
             TRANSFER: begin
-                if(controls.opcode == OP_LD)  wr.enable = '1;
-                if(controls.opcode == OP_POP) begin
-                    wr.enable = '1;
-                    sp_next   = sp + 1;
+                if (controls.reg_writeback && controls.mem_read) begin
+                        wr.enable = '1;
                 end
 
-                if(controls.opcode == OP_ST) begin
-                    intended_bus.address      = rd2.data + controls.immediate;
-                    intended_bus.write_enable = '1;
-                    intended_bus.write_data   = rd1.data;
+                if (controls.mem_write) begin
+                        intended_bus.write_enable = '1;
                 end
 
-                if(controls.opcode == OP_PUSH) begin
-                    intended_bus.address      = sp - 1;
-                    intended_bus.write_enable = '1;
-                    intended_bus.write_data   = rd1.data;
+                if (controls.mem_read) begin
+                        wr.data = intended_bus.read_data;
                 end
 
-                if(controls.opcode == OP_CALL) begin
-                    intended_bus.address      = sp - 1;
-                    intended_bus.write_enable = '1;
-                    intended_bus.write_data   = pc + 1;
-                end
+                intended_bus.write_data = rd1.data;
+                case (controls.opcode)
+                        OP_POP:  sp_next = sp + 1;
+                        OP_ST:   intended_bus.address = rd2.data + 32'(controls.immediate[15:0]);
+                        OP_PUSH: intended_bus.address = sp - 1;
+                        OP_CALL: begin
+                                 intended_bus.address      = sp - 1;
+                                 intended_bus.write_data   = pc + 1;
+                        end
+                        OP_RET: begin
+                                 intended_bus.address = sp;
+                                 pc_next              = intended_bus.read_data;
+                                 sp_next              = sp + 1;
+                        end
+                endcase
 
-                if(controls.opcode == OP_RET) begin
-                    intended_bus.address = sp;
-                    pc_next              = intended_bus.read_data;
-                    sp_next              = sp + 1;
-                end
             end
         endcase
 
         // jumping commands
         if(controls.jump) begin
             case(controls.opcode)
-                OP_JMP:  pc_next = controls.immediate;
+                OP_JMP: pc_next = 32'(controls.immediate[15:0]);
                 OP_JAL: begin
-                    pc_next = controls.immediate;
+                    pc_next = pc + 32'($signed(controls.immediate[15:0]));
                     wr.data = pc + 1;
                 end
                 OP_JREL: pc_next = pc + 32'($signed(controls.immediate[15:0]));
@@ -227,7 +226,7 @@ module core
 
         if(controls.mem_read && core_state == EXECUTE) begin
             if(controls.opcode == OP_LD) begin
-                intended_bus.address = addr_t'(rd1.data + controls.immediate);
+                intended_bus.address = addr_t'(rd1.data + 32'(controls.immediate[15:0]));
             end else if (controls.opcode == OP_POP) begin
                 intended_bus.address = sp;
                 sp_next              = sp + 1;
@@ -236,20 +235,18 @@ module core
             end
         end
 
-        if(controls.mem_read && core_state == TRANSFER) begin
-            wr.data = intended_bus.read_data;
-        end
-
         if(controls.mem_write && core_state != FETCH) begin
-            if(controls.opcode == OP_PUSH ||
-               controls.opcode == OP_CALL) begin
+            if(controls.opcode == OP_PUSH || controls.opcode == OP_CALL) begin
                 sp_next = sp - 1;
             end
         end
 
-        if(controls.opcode == OP_LDI) wr.data = controls.immediate;
-        if(controls.opcode == OP_STS) sp_next  = rd1.data;
-        if(controls.opcode == OP_LDS) wr.data  = sp;
+	case (controls.opcode)
+		OP_LDI: wr.data = 32'(controls.immediate[15:0]);
+		OP_STS: sp_next = rd1.data;
+		OP_LDS: wr.data = sp;
+	endcase
+
         if(controls.halt)             pc_next  = pc;
     end
 

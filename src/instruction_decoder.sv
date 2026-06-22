@@ -28,15 +28,15 @@ module instruction_decoder
         endcase
 
         case(in.opcode)
-            OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SHLI,
-            OP_SHRI, OP_LD, OP_ST, OP_JMP, OP_JAL, OP_JREL, OP_LDI, OP_CALL: begin
+            OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SHLI, OP_SHRI,
+            OP_LD, OP_ST, OP_JMP, OP_JAL, OP_JREL, OP_LDI, OP_CALL: begin
                 out.immediate = in.operand.imm;
                 out.use_immediate = '1;
                 out.reg_b = '0;
             end
         endcase
 
-        case(in.opcode)
+        case(in.opcode) // reg_b overrides
             OP_LD, OP_ST, OP_BEQ, OP_BLT, OP_BNEQ, OP_BGT: begin
                 out.reg_b = in.reg_destination;
             end
@@ -57,8 +57,9 @@ module instruction_decoder
         if(in.opcode == OP_BEQ || in.opcode == OP_BLT ||
            in.opcode == OP_BNEQ || in.opcode == OP_BGT) begin
                 out.immediate = in.operand.imm;
-		        out.branch = '1;
-	end
+                out.branch = '1;
+        end
+
         if(in.opcode == OP_JMP ||
            in.opcode == OP_JAL ||
            in.opcode == OP_JREL ||

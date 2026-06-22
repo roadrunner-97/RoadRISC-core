@@ -25,8 +25,6 @@ except ImportError:
 
 def parse_word(s: str) -> int | None:
     s = s.strip().lower()
-    if s.startswith("0x"):
-        s = s[2:]
     if not s:
         return None
     try:
