@@ -11,3 +11,4 @@ src/gowin_dpb/*
 src/hardware/program.mi
 
 roadrisc.gprj
+verification-program.roadrun

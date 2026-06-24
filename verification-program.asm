@@ -308,10 +308,7 @@ fail:
 	xor r1, r1
 	mov r2, str_failed
 	call bios_print_str
-	xor r0, r0
-	mov r1, 8
 	mov r2, r12
-	mov r2, 1
 	call bios_print_num
 	jmp wait_then_rtb
 
